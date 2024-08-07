@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://joel-chapter-though-thread.trycloudflare.com"
+application_url = "https://industrial-messenger-survive-mails.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://joel-chapter-though-thread.trycloudflare.com/auth/callback",
-  "https://joel-chapter-though-thread.trycloudflare.com/auth/shopify/callback",
-  "https://joel-chapter-though-thread.trycloudflare.com/api/auth/callback"
+  "https://industrial-messenger-survive-mails.trycloudflare.com/auth/callback",
+  "https://industrial-messenger-survive-mails.trycloudflare.com/auth/shopify/callback",
+  "https://industrial-messenger-survive-mails.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

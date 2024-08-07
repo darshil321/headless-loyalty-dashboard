@@ -5,9 +5,11 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-
+import "@shopify/polaris/build/esm/styles.css";
 import "./globals.css";
 import { cn } from "./lib/utils";
+import enTranslations from "@shopify/polaris/locales/en.json";
+import { AppProvider } from "@shopify/polaris";
 
 export default function App() {
   return (
@@ -20,13 +22,20 @@ export default function App() {
           rel="stylesheet"
           href="https://cdn.shopify.com/static/fonts/inter/v4/styles.css"
         />
+        <link
+          rel="stylesheet"
+          href="https://cdn.shopify.com/static/fonts/inter/v4/styles.css"
+        />
+        <link rel="stylesheet" href="styles.css" />
         <Meta />
         <Links />
       </head>
       <body className={cn("antialiased")}>
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
+        <AppProvider i18n={enTranslations}>
+          <Outlet />
+          <ScrollRestoration />
+          <Scripts />
+        </AppProvider>
       </body>
     </html>
   );
