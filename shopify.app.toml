@@ -1,0 +1,33 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "540d2178130770d2fa72da8461f0de90"
+name = "loyalty-dashboard"
+handle = "loyalty-dashboard"
+application_url = "https://overhead-margaret-analysts-panels.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "dershil-demo.myshopify.com"
+include_config_on_deploy = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://overhead-margaret-analysts-panels.trycloudflare.com/auth/callback",
+  "https://overhead-margaret-analysts-panels.trycloudflare.com/auth/shopify/callback",
+  "https://overhead-margaret-analysts-panels.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-07"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks"
+
+[pos]
+embedded = false
