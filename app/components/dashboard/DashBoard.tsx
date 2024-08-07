@@ -31,9 +31,9 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-export default function Component() {
+export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("events");
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <div className="flex flex-col w-full min-h-screen">
@@ -189,9 +189,6 @@ export default function Component() {
         </Tabs>
       </main>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline">Open Modal</Button>
-        </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Select an Option</DialogTitle>
