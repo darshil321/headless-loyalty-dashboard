@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useLocation } from "@remix-run/react";
 import { redirect } from "react-router";
-import { StepEnum } from "../dashboard/DashBoard";
+
 import {
   Select,
   SelectContent,
@@ -15,26 +15,45 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { StepEnum } from "@/routes/dashboard/route";
 
 type SetEventStageFunc = (stage: any) => void;
 
+enum SpendingType {
+  FIXED = "fixed",
+  PERCENTAGE = "percentage",
+}
+
+interface FormDataState {
+  points: string;
+  expiryDate: string;
+  icon: string;
+  minOrderValue: number | null;
+  maxOrderValue: number | null;
+  spendingType: SpendingType;
+  spendingLimit: number | null;
+}
+
 export default function EventForm({
   setEventStage,
+  selectedEvent,
 }: {
   setEventStage: SetEventStageFunc;
+  selectedEvent: any;
 }) {
   const router = useLocation();
   const { id = false } = router.search;
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormDataState>({
     points: "",
     expiryDate: "",
     icon: "default",
     minOrderValue: null,
     maxOrderValue: null,
-    spendingType: "FIX",
+    spendingType: SpendingType.FIXED,
     spendingLimit: null,
   });
+
   const [iconFile, setIconFile] = useState<File | null>(null);
   const [iconPreview, setIconPreview] = useState<string | null>(null);
 
@@ -116,7 +135,7 @@ export default function EventForm({
         <div className="flex items-center space-x-4">
           <ArrowLeftIcon className="h-6 w-6" onClick={() => redirect("/")} />
           <h1 className="text-xl font-semibold">
-            {id ? "Edit Event" : "Create New Event"}
+            {id ? "Edit Event" : selectedEvent}
           </h1>
         </div>
       </header>
@@ -152,6 +171,8 @@ export default function EventForm({
               <Label htmlFor="minimum order value">minimum order value</Label>
               <Input
                 type="tel"
+                value={formData.minOrderValue}
+                onChange={handleInputChange}
                 id="minimum-order-value"
                 placeholder="Enter minimum order value"
               />
@@ -160,7 +181,7 @@ export default function EventForm({
               <Label htmlFor="maximum order value">maximum order value</Label>
               <Input
                 type="tel"
-                value={formData}
+                value={formData.maxOrderValue}
                 onChange={handleInputChange}
                 id="maximum-order-value"
                 placeholder="Enter maximum order value"
@@ -189,7 +210,9 @@ export default function EventForm({
             <div className="grid gap-2">
               <Label htmlFor="spendingLimit">Spending Limit</Label>
               <Input
-                type="'tel"
+                type="tel"
+                value={formData.spendingLimit}
+                onChange={handleInputChange}
                 placeholder="spending limit"
                 id="spending-limit"
               />

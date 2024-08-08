@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://unlikely-chargers-posted-cancellation.trycloudflare.com"
+application_url = "https://microwave-guides-boutique-overview.trycloudflare.com"
 embedded = true
 
 [build]
@@ -13,13 +13,13 @@ include_config_on_deploy = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_price_rules, read_price_rules, write_discounts, read_discounts, write_products, read_products, write_orders, read_orders"
+scopes = "read_discounts,read_orders,read_price_rules,read_products,write_discounts,write_orders,write_price_rules,write_products"
 
 [auth]
 redirect_urls = [
-  "https://unlikely-chargers-posted-cancellation.trycloudflare.com/auth/callback",
-  "https://unlikely-chargers-posted-cancellation.trycloudflare.com/auth/shopify/callback",
-  "https://unlikely-chargers-posted-cancellation.trycloudflare.com/api/auth/callback"
+  "https://microwave-guides-boutique-overview.trycloudflare.com/auth/callback",
+  "https://microwave-guides-boutique-overview.trycloudflare.com/auth/shopify/callback",
+  "https://microwave-guides-boutique-overview.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
