@@ -1,11 +1,11 @@
 import Dashboard from "@/components/dashboard/DashBoard";
-import { Page } from "@shopify/polaris";
+import { Card } from "@shopify/polaris";
 
 const route = () => {
   return (
-    <Page>
-      <Dashboard />
-    </Page>
+    <Card>
+      <Dashboard />;
+    </Card>
   );
 };
 

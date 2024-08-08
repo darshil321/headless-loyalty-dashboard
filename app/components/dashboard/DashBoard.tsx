@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-// import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -32,14 +31,13 @@ import {
 import { Button, Text } from "@shopify/polaris";
 import EventForm from "../event/EventForm";
 
+export const StepEnum = {
+  INITIAL: "initial",
+  SELECT_STAGE: "SelectStage",
+  SET_EVENT_DATA: "seteventdata",
+  LIST_TABLE_STAGE: "TableView",
+};
 export default function Dashboard() {
-  const StepEnum = {
-    INITIAL: "initial",
-    SELECT_STAGE: "SelectStage",
-    SET_EVENT_DATA: "seteventdata",
-    LIST_TABLE_STAGE: "TableView",
-  };
-
   const [activeTab, setActiveTab] = useState("events");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [eventStage, setEventStage] = useState(StepEnum.INITIAL);
@@ -113,19 +111,20 @@ export default function Dashboard() {
               <div>
                 <h2 className="text-lg font-semibold">Celebrate Birthday</h2>
               </div>
-              <Card className="border outline outline-1 p-4">
-                <EventForm />
+              <Card className=" p-4">
+                <EventForm setEventStage={setEventStage} />
               </Card>
             </div>
           </div>
         );
       case StepEnum.LIST_TABLE_STAGE:
         return (
-          <Card className="p-4">
-            <Text as="h1"> define conditions</Text>
-
+          <div className="w-full flex flex-col h-fit">
+            <div className="w-full flex justify-end my-3 items-end">
+              <Button variant="primary">Add ways to earn</Button>
+            </div>
             <div className=" w-full flex items-end justify-end">
-              <Card>
+              <Card className="w-full">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -173,11 +172,8 @@ export default function Dashboard() {
                   </TableBody>
                 </Table>
               </Card>
-              <Button variant="primary" submit>
-                select
-              </Button>
             </div>
-          </Card>
+          </div>
         );
     }
   };
@@ -197,14 +193,78 @@ export default function Dashboard() {
             <TabsList>
               <TabsTrigger value="events">Events</TabsTrigger>
               <TabsTrigger value="rules">Rules</TabsTrigger>
-              <TabsTrigger value="conditions">Conditions</TabsTrigger>
               <TabsTrigger value="benefits">Benefits</TabsTrigger>
             </TabsList>
           </div>
 
           <TabsContent value="events">{EventDisplay()}</TabsContent>
           <TabsContent value="rules">
-            {/* define rule table */}
+            <div id="define-rule" className="pt-4">
+              <div className="flex flex-col gap-4">
+                <div>
+                  <h2 className="text-lg font-semibold">Define Rules</h2>
+                  <p className="text-muted-foreground">
+                    Create new rules for your rewards program.
+                  </p>
+                </div>
+                <Card className="p-4">
+                  <form className="grid gap-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="operations">Operations</Label>
+                      <Input id="operations" placeholder="Enter operations" />
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="field1">Field 1</Label>
+                        <Select id="field1">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select field 1" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="option1">Option 1</SelectItem>
+                            <SelectItem value="option2">Option 2</SelectItem>
+                            <SelectItem value="option3">Option 3</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="field2">Field 2</Label>
+                        <Select id="field2">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select field 2" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="option1">Option 1</SelectItem>
+                            <SelectItem value="option2">Option 2</SelectItem>
+                            <SelectItem value="option3">Option 3</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="field3">Field 3</Label>
+                        <Select id="field3">
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select field 3" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="option1">Option 1</SelectItem>
+                            <SelectItem value="option2">Option 2</SelectItem>
+                            <SelectItem value="option3">Option 3</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className=" w-full flex justify-end  items-end">
+                      <Button variant="primary" submit>
+                        Save Rule
+                      </Button>
+                    </div>
+                  </form>
+                </Card>
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value="benefits">
             <div id="define-rule" className="pt-4">
               <div className="flex flex-col gap-4">
                 <div>
@@ -269,6 +329,37 @@ export default function Dashboard() {
             </div>
           </TabsContent>
         </Tabs>
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Select an Option</DialogTitle>
+              <DialogDescription>
+                Choose an option from the list below.
+              </DialogDescription>
+            </DialogHeader>
+            <Select>
+              <SelectTrigger id="options" aria-label="Options">
+                <SelectValue placeholder="Select an option" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="option1">Option 1</SelectItem>
+                <SelectItem value="option2">Option 2</SelectItem>
+                <SelectItem value="option3">Option 3</SelectItem>
+              </SelectContent>
+            </Select>
+            <DialogFooter>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setEventStage(StepEnum.SET_EVENT_DATA);
+                }}
+              >
+                Submit
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

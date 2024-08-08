@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://industrial-messenger-survive-mails.trycloudflare.com"
+application_url = "https://unlikely-chargers-posted-cancellation.trycloudflare.com"
 embedded = true
 
 [build]
@@ -13,13 +13,13 @@ include_config_on_deploy = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products"
+scopes = "write_price_rules, read_price_rules, write_discounts, read_discounts, write_products, read_products, write_orders, read_orders"
 
 [auth]
 redirect_urls = [
-  "https://industrial-messenger-survive-mails.trycloudflare.com/auth/callback",
-  "https://industrial-messenger-survive-mails.trycloudflare.com/auth/shopify/callback",
-  "https://industrial-messenger-survive-mails.trycloudflare.com/api/auth/callback"
+  "https://unlikely-chargers-posted-cancellation.trycloudflare.com/auth/callback",
+  "https://unlikely-chargers-posted-cancellation.trycloudflare.com/auth/shopify/callback",
+  "https://unlikely-chargers-posted-cancellation.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
