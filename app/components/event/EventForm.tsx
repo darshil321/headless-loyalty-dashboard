@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { StepEnum } from "@/routes/dashboard/route";
+import { useAppSelector } from "@/store/hooks";
 
 type SetEventStageFunc = (stage: any) => void;
 
@@ -28,30 +29,29 @@ interface FormDataState {
   points: string;
   expiryDate: string;
   icon: string;
-  minOrderValue: number | null;
-  maxOrderValue: number | null;
+  minOrderValue: number;
+  maxOrderValue: number;
   spendingType: SpendingType;
-  spendingLimit: number | null;
+  spendingLimit: number;
 }
 
 export default function EventForm({
   setEventStage,
-  selectedEvent,
 }: {
   setEventStage: SetEventStageFunc;
-  selectedEvent: any;
 }) {
   const router = useLocation();
+  const selectedEvent = useAppSelector((state) => state["event"].selectedEvent);
   const { id = false } = router.search;
 
   const [formData, setFormData] = useState<FormDataState>({
     points: "",
     expiryDate: "",
     icon: "default",
-    minOrderValue: null,
-    maxOrderValue: null,
+    minOrderValue: 0,
+    maxOrderValue: 0,
     spendingType: SpendingType.FIXED,
-    spendingLimit: null,
+    spendingLimit: 0,
   });
 
   const [iconFile, setIconFile] = useState<File | null>(null);
@@ -134,7 +134,7 @@ export default function EventForm({
       <header className="flex items-center justify-between p-4 border-b">
         <div className="flex items-center space-x-4">
           <ArrowLeftIcon className="h-6 w-6" onClick={() => redirect("/")} />
-          <h1 className="text-xl font-semibold">
+          <h1 className="text-xl font-semibold capitalize">
             {id ? "Edit Event" : selectedEvent}
           </h1>
         </div>
@@ -211,7 +211,7 @@ export default function EventForm({
               <Label htmlFor="spendingLimit">Spending Limit</Label>
               <Input
                 type="tel"
-                value={formData.spendingLimit}
+                value={formData?.spendingLimit}
                 onChange={handleInputChange}
                 placeholder="spending limit"
                 id="spending-limit"

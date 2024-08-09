@@ -11,6 +11,9 @@ import { cn } from "./lib/utils";
 import enTranslations from "@shopify/polaris/locales/en.json";
 import { AppProvider } from "@shopify/polaris";
 
+import { Provider } from "react-redux";
+import { store } from "./store/store";
+
 export default function App() {
   return (
     <html>
@@ -31,11 +34,13 @@ export default function App() {
         <Links />
       </head>
       <body className={cn("antialiased")}>
-        <AppProvider i18n={enTranslations}>
-          <Outlet />
-          <ScrollRestoration />
-          <Scripts />
-        </AppProvider>
+        <Provider store={store}>
+          <AppProvider i18n={enTranslations}>
+            <Outlet />
+            <ScrollRestoration />
+            <Scripts />
+          </AppProvider>
+        </Provider>
       </body>
     </html>
   );

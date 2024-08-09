@@ -1,44 +1,71 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import { Dialog } from "@/components/ui/dialog";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import EventForm from "@/components/event/EventForm";
 import { Button } from "@/components/ui/button";
 import { SelectEventForm } from "@/components/common/SelectEventForm";
+import EventsTable from "@/components/event/EventsTable";
+import EventRules from "@/components/event/EventRules";
+import EventBenefits from "@/components/event/EventBenefits";
+import { useAppBridge } from "@shopify/app-bridge-react";
 
 export const StepEnum = {
   INITIAL: "initial",
-  SELECT_STAGE: "SelectStage",
   SET_EVENT_DATA: "seteventdata",
   LIST_TABLE_STAGE: "TableView",
+};
+
+type EventDetails = {
+  backendValue: string;
+  frontendValue: string;
+};
+
+export const EventEnum: Record<string, EventDetails> = {
+  SIGN_UP: {
+    backendValue: "SIGN_UP",
+    frontendValue: "Sign Up",
+  },
+  ORDER_CREATE: {
+    backendValue: "ORDER_CREATE",
+    frontendValue: "Order Create",
+  },
 };
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("events");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [eventStage, setEventStage] = useState(StepEnum.INITIAL);
-  const [selectedEvent, setSelectedEvent] = useState(SelctedEventEnum.SIGN_UP);
-  console.log("selectedEvent", selectedEvent);
+  const shopify = useAppBridge();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const sessionToken = await shopify.idToken();
+        // const response = await fetch("  ", {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     Authorization: `Bearer ${sessionToken}`,
+        //   },
+        // });
+        console.log("sessinToken", sessionToken);
+
+        // const data = await response.json();
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const EventDisplay = () => {
     switch (eventStage) {
@@ -50,34 +77,21 @@ export default function Dashboard() {
               Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor
               iusto consequuntur velit deserunt eius ipsam officia, quod,
               adipisci, hic facere atque! Autem sunt sit debitis accusantium
-              sapiente, veritatis quae quibusdam? Qui laudantium odit in
-              provident quidem, fugiat ut harum assumenda animi possimus
-              asperiores fugit, rem commodi! Modi rerum ratione unde!
+              sapiente, veritatis quae quibusdam?
             </div>
             <div className=" w-full flex items-end justify-end">
               <Button
                 variant="primary"
                 onClick={() => {
-                  setEventStage(StepEnum.SELECT_STAGE);
                   setIsModalOpen(true);
                 }}
+                className=" bg-black text-white"
                 type="submit"
               >
                 select
               </Button>
             </div>
           </Card>
-        );
-      case StepEnum.SELECT_STAGE:
-        return (
-          <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-            <SelectEventForm
-              setSelectedEvent={setSelectedEvent}
-              setEventStage={setEventStage}
-              setIsModalOpen={setIsModalOpen}
-              SelctedEventEnum={SelctedEventEnum}
-            />
-          </Dialog>
         );
       case StepEnum.SET_EVENT_DATA:
         return (
@@ -87,70 +101,15 @@ export default function Dashboard() {
                 <h2 className="text-lg font-semibold">Celebrate Birthday</h2>
               </div>
               <Card className=" p-4">
-                <EventForm
-                  setEventStage={setEventStage}
-                  selectedEvent={selectedEvent}
-                />
+                <EventForm setEventStage={setEventStage} />
               </Card>
             </div>
           </div>
         );
       case StepEnum.LIST_TABLE_STAGE:
         return (
-          <div className="w-full flex flex-col h-fit">
-            <div className="w-full flex justify-end my-3 items-end">
-              <Button variant="primary">Add ways to earn</Button>
-            </div>
-            <div className=" w-full flex items-end justify-end">
-              <Card className="w-full">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Events</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Points</TableHead>
-                      <TableHead>Expiry Date</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell className="flex items-center space-x-2">
-                        <Avatar>
-                          <AvatarImage
-                            src="/placeholder-user.jpg"
-                            alt="Event"
-                          />
-                          <AvatarFallback>AB</AvatarFallback>
-                        </Avatar>
-                        <span>Celebrate Birthday</span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="default">Active</Badge>
-                      </TableCell>
-                      <TableCell>XX points</TableCell>
-                      <TableCell>Within 30 days</TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell className="flex items-center space-x-2">
-                        <Avatar>
-                          <AvatarImage
-                            src="/placeholder-user.jpg"
-                            alt="Event"
-                          />
-                          <AvatarFallback>AB</AvatarFallback>
-                        </Avatar>
-                        <span>Sign-Up</span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">Inactive</Badge>
-                      </TableCell>
-                      <TableCell>XX points</TableCell>
-                      <TableCell>Within 30 days</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </Card>
-            </div>
+          <div>
+            <EventsTable />
           </div>
         );
     }
@@ -177,136 +136,26 @@ export default function Dashboard() {
 
           <TabsContent value="events">{EventDisplay()}</TabsContent>
           <TabsContent value="rules">
-            <div id="define-rule" className="pt-4">
-              <div className="flex flex-col gap-4">
-                <div>
-                  <h2 className="text-lg font-semibold">Define Rules</h2>
-                  <p className="text-muted-foreground">
-                    Create new rules for your rewards program.
-                  </p>
-                </div>
-                <Card className="p-4">
-                  <form className="grid gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="operations">Operations</Label>
-                      <Input id="operations" placeholder="Enter operations" />
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="grid gap-2">
-                        <Label htmlFor="field1">Field 1</Label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select field 1" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="option1">Option 1</SelectItem>
-                            <SelectItem value="option2">Option 2</SelectItem>
-                            <SelectItem value="option3">Option 3</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="field2">Field 2</Label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select field 2" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="option1">Option 1</SelectItem>
-                            <SelectItem value="option2">Option 2</SelectItem>
-                            <SelectItem value="option3">Option 3</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="grid gap-2">
-                        <Label htmlFor="field3">Field 3</Label>
-                        <Select>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select field 3" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="option1">Option 1</SelectItem>
-                            <SelectItem value="option2">Option 2</SelectItem>
-                            <SelectItem value="option3">Option 3</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className=" w-full flex justify-end  items-end">
-                      <Button variant="primary" type="submit">
-                        Save Rule
-                      </Button>
-                    </div>
-                  </form>
-                </Card>
-              </div>
-            </div>
+            <EventRules />
           </TabsContent>
           <TabsContent value="benefits">
-            <div id="define-rule" className="pt-4">
-              <div className="flex flex-col gap-4">
-                <div>
-                  <h2 className="text-lg font-semibold">Define Rules</h2>
-                  <p className="text-muted-foreground">
-                    Create new rules for your rewards program.
-                  </p>
-                </div>
-                <form className="grid gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="operations">Operations</Label>
-                    <Input id="operations" placeholder="Enter operations" />
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="grid gap-2">
-                      <Label htmlFor="field1">Field 1</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select field 1" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="option1">Option 1</SelectItem>
-                          <SelectItem value="option2">Option 2</SelectItem>
-                          <SelectItem value="option3">Option 3</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="field2">Field 2</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select field 2" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="option1">Option 1</SelectItem>
-                          <SelectItem value="option2">Option 2</SelectItem>
-                          <SelectItem value="option3">Option 3</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="field3">Field 3</Label>
-                      <Select>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select field 3" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="option1">Option 1</SelectItem>
-                          <SelectItem value="option2">Option 2</SelectItem>
-                          <SelectItem value="option3">Option 3</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className=" w-full flex justify-end  items-end">
-                    <Button variant="primary" type="submit">
-                      Save Rule
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            </div>
+            <EventBenefits />
           </TabsContent>
         </Tabs>
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Select an Option</DialogTitle>
+              <DialogDescription>
+                Choose an option from the list below.
+              </DialogDescription>
+            </DialogHeader>
+            <SelectEventForm
+              setEventStage={setEventStage}
+              setIsModalOpen={setIsModalOpen}
+            />
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );

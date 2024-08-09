@@ -11,7 +11,7 @@ import {
 } from "../ui/select";
 import { Button } from "../ui/button";
 
-const Rules = () => {
+const EventRules = () => {
   return (
     <div id="define-rule" className="pt-4">
       <div className="flex flex-col gap-4">
@@ -80,4 +80,4 @@ const Rules = () => {
   );
 };
 
-export default Rules;
+export default EventRules;

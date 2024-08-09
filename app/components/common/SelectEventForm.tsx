@@ -8,7 +8,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -19,6 +18,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { StepEnum } from "@/routes/dashboard/route";
+import { useAppDispatch } from "@/store/hooks";
+import { setSelectedEvent } from "@/store/slices/eventSlice";
 
 export const EventEnum = {
   SIGN_UP: "SIGN_UP",
@@ -30,22 +31,20 @@ const FormSchema = z.object({
 });
 
 export function SelectEventForm({
-  setSelectedEvent,
   setEventStage,
   setIsModalOpen,
 }: {
-  setSelectedEvent: (event: typeof EventEnum) => void;
+  setSelectedEvent?: (event: typeof EventEnum.SIGN_UP) => void;
   setEventStage: (stage: any) => void;
   setIsModalOpen: (isOpen: boolean) => void;
-  EventEnum: any;
 }) {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-
+  const dispatch = useAppDispatch();
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    console.log("data", data);
-    // setSelectedEvent(data.selectedOption);
+    console.log("dataxxc", data);
+    dispatch(setSelectedEvent(data.selectedOption));
     setEventStage(StepEnum.SET_EVENT_DATA);
     setIsModalOpen(false);
   }
@@ -57,8 +56,7 @@ export function SelectEventForm({
           control={form.control}
           name="selectedOption"
           render={({ field }) => (
-            <FormItem>
-              <FormLabel>Select an Option</FormLabel>
+            <FormItem className="w-full">
               <Select onValueChange={field.onChange} defaultValue={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -76,7 +74,13 @@ export function SelectEventForm({
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button
+          variant="primary"
+          className=" bg-black text-white"
+          type="submit"
+        >
+          Submit
+        </Button>
       </form>
     </Form>
   );

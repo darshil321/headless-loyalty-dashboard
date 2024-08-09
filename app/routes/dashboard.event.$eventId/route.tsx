@@ -1,4 +1,4 @@
-import React from "react";
+import EventForm from "@/components/event/EventForm";
 
 export async function loader({ params }: { params: any }) {
   console.log("params", params);
@@ -6,7 +6,11 @@ export async function loader({ params }: { params: any }) {
 }
 
 const route = () => {
-  return <div>route</div>;
+  return (
+    <div>
+      <EventForm />
+    </div>
+  );
 };
 
 export default route;
