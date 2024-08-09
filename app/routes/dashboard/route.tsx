@@ -16,6 +16,11 @@ import EventsTable from "@/components/event/EventsTable";
 import EventRules from "@/components/event/EventRules";
 import EventBenefits from "@/components/event/EventBenefits";
 import { useAppBridge } from "@shopify/app-bridge-react";
+import { getMySessionToken } from "@/lib/getSession";
+import { useAppSelector } from "@/store/hooks";
+import { authenticate } from "@/shopify.server";
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { useLoaderData, useSubmit } from "@remix-run/react";
 
 export const StepEnum = {
   INITIAL: "initial",
@@ -38,27 +43,66 @@ export const EventEnum: Record<string, EventDetails> = {
     frontendValue: "Order Create",
   },
 };
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { session } = await authenticate.admin(request);
+  return { sessionToken: session.accessToken };
+};
+
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const { session } = await authenticate.admin(request);
+  const sessionToken = session.accessToken;
+
+  const response = await fetch(
+    "https://webhook.site/3c49c04d-a03b-4efb-b64f-c96602209290",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionToken }),
+    },
+  );
+
+  return { success: response.ok };
+};
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("events");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [eventStage, setEventStage] = useState(StepEnum.INITIAL);
-  const shopify = useAppBridge();
+  const storedSessionToken = useAppSelector(
+    (state) => state.session.sessionToken,
+  );
+  const loaderData = useLoaderData();
+  console.log("loaderData", loaderData);
+  console.log("storedSessionToken", storedSessionToken);
+
+  // const sessionToken = getMySessionToken();
+  // console.log("sessionToken", sessionToken);
+  // const appBridge = useAppBridge();
+  // console.log("appBridge", appBridge);
+  // let sessionToken;
+  // const shopify = useAppBridge();
+  // useEffect(() => {
+  //   shopify.idToken().then((res) => {
+  //     console.log("res", res);
+  //     sessionToken = res;
+  //   });
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sessionToken = await shopify.idToken();
-        // const response = await fetch("  ", {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json",
-        //     Authorization: `Bearer ${sessionToken}`,
-        //   },
-        // });
-        console.log("sessinToken", sessionToken);
-
-        // const data = await response.json();
+        const response = await fetch(
+          "https://9offq7b4x6.execute-api.us-east-2.amazonaws.com/v1/loyalty_tier_events",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${storedSessionToken}`,
+            },
+          },
+        );
+        const data = await response.json();
+        console.log("datareal", data);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
@@ -66,6 +110,12 @@ export default function Dashboard() {
 
     fetchData();
   }, []);
+
+  const submit = useSubmit();
+
+  const handleActionClick = () => {
+    submit(null, { method: "POST" });
+  };
 
   const EventDisplay = () => {
     switch (eventStage) {
@@ -137,11 +187,15 @@ export default function Dashboard() {
           <TabsContent value="events">{EventDisplay()}</TabsContent>
           <TabsContent value="rules">
             <EventRules />
+            <Button onClick={handleActionClick} className="bg-black text-white">
+              Fire Action
+            </Button>
           </TabsContent>
           <TabsContent value="benefits">
             <EventBenefits />
           </TabsContent>
         </Tabs>
+
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>

