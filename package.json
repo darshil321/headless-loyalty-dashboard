@@ -33,6 +33,7 @@
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-tabs": "^1.1.0",
+    "@radix-ui/react-toast": "^1.2.1",
     "@reduxjs/toolkit": "^2.2.7",
     "@remix-run/dev": "^2.7.1",
     "@remix-run/node": "^2.7.1",
@@ -43,8 +44,11 @@
     "@shopify/polaris": "^12.27.0",
     "@shopify/shopify-app-remix": "^3.0.2",
     "@shopify/shopify-app-session-storage-prisma": "^5.0.2",
+    "axios": "^1.7.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "cmdk": "^1.0.0",
+    "formik": "^2.4.6",
     "isbot": "^5.1.0",
     "lucide-react": "^0.424.0",
     "prisma": "^5.11.0",
@@ -56,6 +60,7 @@
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "vite-tsconfig-paths": "^4.3.1",
+    "yup": "^1.4.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

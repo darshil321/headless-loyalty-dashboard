@@ -1,32 +1,17 @@
 import { useEffect, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-
 import EventForm from "@/components/event/EventForm";
 import { Button } from "@/components/ui/button";
-import { SelectEventForm } from "@/components/common/SelectEventForm";
 import EventsTable from "@/components/event/EventsTable";
 import EventRules from "@/components/event/EventRules";
 import EventBenefits from "@/components/event/EventBenefits";
-import { useAppBridge } from "@shopify/app-bridge-react";
-import { getMySessionToken } from "@/lib/getSession";
-import { useAppSelector } from "@/store/hooks";
 import { authenticate } from "@/shopify.server";
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, useSubmit } from "@remix-run/react";
-
-export const StepEnum = {
-  INITIAL: "initial",
-  SET_EVENT_DATA: "seteventdata",
-  LIST_TABLE_STAGE: "TableView",
-};
+import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import { listEventsAPI } from "@/api/events/list-events";
+import { useAppSelector } from "@/store/hooks";
+import { StepEnum } from "@/store/slices/eventSlice";
+import SelectEventModal from "@/components/common/SelectEventModal";
 
 type EventDetails = {
   backendValue: string;
@@ -66,43 +51,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("events");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [eventStage, setEventStage] = useState(StepEnum.INITIAL);
-  const storedSessionToken = useAppSelector(
-    (state) => state.session.sessionToken,
-  );
-  const loaderData = useLoaderData();
-  console.log("loaderData", loaderData);
-  console.log("storedSessionToken", storedSessionToken);
-
-  // const sessionToken = getMySessionToken();
-  // console.log("sessionToken", sessionToken);
-  // const appBridge = useAppBridge();
-  // console.log("appBridge", appBridge);
-  // let sessionToken;
-  // const shopify = useAppBridge();
-  // useEffect(() => {
-  //   shopify.idToken().then((res) => {
-  //     console.log("res", res);
-  //     sessionToken = res;
-  //   });
-  // }, []);
+  const eventStage = useAppSelector((state) => state.event.eventStage);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://9offq7b4x6.execute-api.us-east-2.amazonaws.com/v1/loyalty_tier_events",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${storedSessionToken}`,
-            },
-          },
-        );
-        const data = await response.json();
-        console.log("datareal", data);
+        const response = await listEventsAPI();
+        console.log("Data fetched", response);
       } catch (error) {
         console.error("Error fetching data: ", error);
       }
@@ -110,12 +65,6 @@ export default function Dashboard() {
 
     fetchData();
   }, []);
-
-  const submit = useSubmit();
-
-  const handleActionClick = () => {
-    submit(null, { method: "POST" });
-  };
 
   const EventDisplay = () => {
     switch (eventStage) {
@@ -130,16 +79,17 @@ export default function Dashboard() {
               sapiente, veritatis quae quibusdam?
             </div>
             <div className=" w-full flex items-end justify-end">
-              <Button
-                variant="primary"
-                onClick={() => {
-                  setIsModalOpen(true);
-                }}
-                className=" bg-black text-white"
-                type="submit"
-              >
-                select
-              </Button>
+              <SelectEventModal
+                dialogTrigger={
+                  <Button
+                    variant="primary"
+                    className=" bg-black text-white"
+                    type="submit"
+                  >
+                    select
+                  </Button>
+                }
+              />
             </div>
           </Card>
         );
@@ -151,7 +101,7 @@ export default function Dashboard() {
                 <h2 className="text-lg font-semibold">Celebrate Birthday</h2>
               </div>
               <Card className=" p-4">
-                <EventForm setEventStage={setEventStage} />
+                <EventForm />
               </Card>
             </div>
           </div>
@@ -187,29 +137,11 @@ export default function Dashboard() {
           <TabsContent value="events">{EventDisplay()}</TabsContent>
           <TabsContent value="rules">
             <EventRules />
-            <Button onClick={handleActionClick} className="bg-black text-white">
-              Fire Action
-            </Button>
           </TabsContent>
           <TabsContent value="benefits">
             <EventBenefits />
           </TabsContent>
         </Tabs>
-
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Select an Option</DialogTitle>
-              <DialogDescription>
-                Choose an option from the list below.
-              </DialogDescription>
-            </DialogHeader>
-            <SelectEventForm
-              setEventStage={setEventStage}
-              setIsModalOpen={setIsModalOpen}
-            />
-          </DialogContent>
-        </Dialog>
       </main>
     </div>
   );

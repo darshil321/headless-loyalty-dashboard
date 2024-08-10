@@ -15,10 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { StepEnum } from "@/routes/dashboard/route";
-import { useAppSelector } from "@/store/hooks";
-
-type SetEventStageFunc = (stage: any) => void;
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { setEventStage, StepEnum } from "@/store/slices/eventSlice";
 
 enum SpendingType {
   FIXED = "fixed",
@@ -35,14 +33,11 @@ interface FormDataState {
   spendingLimit: number;
 }
 
-export default function EventForm({
-  setEventStage,
-}: {
-  setEventStage: SetEventStageFunc;
-}) {
+export default function EventForm() {
   const router = useLocation();
   const selectedEvent = useAppSelector((state) => state["event"].selectedEvent);
   const { id = false } = router.search;
+  const dispatch = useAppDispatch();
 
   const [formData, setFormData] = useState<FormDataState>({
     points: "",
@@ -116,8 +111,8 @@ export default function EventForm({
       //   method,
       //   body: formDataToSend,
       // });
+      dispatch(setEventStage(StepEnum.SET_EVENT_DATA));
       redirect("/events");
-      setEventStage(StepEnum.LIST_TABLE_STAGE);
 
       // if (response.ok) {
       //   setEventStage(StepEnum.LIST_TABLE_STAGE);
@@ -217,6 +212,18 @@ export default function EventForm({
                 id="spending-limit"
               />
             </div>
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="field2">Tiers</Label>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Tiers" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="tier1">tier 1</SelectItem>
+                <SelectItem value="tier2">tier 2</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="flex justify-between pt-4">
             <Button

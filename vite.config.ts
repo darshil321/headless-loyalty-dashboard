@@ -55,6 +55,9 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./app"),
     },
   },
+  optimizeDeps: {
+    include: ["@radix-ui/react-toast", "formik"],
+  },
   build: {
     assetsInlineLimit: 0,
   },

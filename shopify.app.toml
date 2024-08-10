@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://sara-husband-julie-ends.trycloudflare.com"
+application_url = "https://generate-medal-rugs-apparent.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_discounts,read_orders,read_price_rules,read_products,write_discou
 
 [auth]
 redirect_urls = [
-  "https://sara-husband-julie-ends.trycloudflare.com/auth/callback",
-  "https://sara-husband-julie-ends.trycloudflare.com/auth/shopify/callback",
-  "https://sara-husband-julie-ends.trycloudflare.com/api/auth/callback"
+  "https://generate-medal-rugs-apparent.trycloudflare.com/auth/callback",
+  "https://generate-medal-rugs-apparent.trycloudflare.com/auth/shopify/callback",
+  "https://generate-medal-rugs-apparent.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

