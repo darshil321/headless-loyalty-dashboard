@@ -153,26 +153,3 @@ export default function TierForm({ tierData, actionData }: TierFormProps) {
     </Form>
   );
 }
-
-// {
-// <div>
-//         <label htmlFor="rules">Rules</label>
-//         <MultiSelector values={selectedRules} onValuesChange={setSelectedRules}>
-//           <MultiSelectorTrigger>
-//             <MultiSelectorInput placeholder="Select rules" />
-//           </MultiSelectorTrigger>
-//           <MultiSelectorContent>
-//             <MultiSelectorList>
-//               {ruleOptions.map((option) => (
-//                 <MultiSelectorItem key={option.value} value={option.value}>
-//                   {option.label}
-//                 </MultiSelectorItem>
-//               ))}
-//             </MultiSelectorList>
-//           </MultiSelectorContent>
-//         </MultiSelector>
-//         {selectedRules.map((rule, index) => (
-//           <input key={index} type="hidden" name="rules" value={rule} />
-//         ))}
-//       </div>
-// }
