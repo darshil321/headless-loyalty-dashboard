@@ -13,8 +13,9 @@ export default function CustomersTable() {
   const users = useAppSelector((state) => state.user.loyaltyUsers);
 
   const handleDetail = (id: string) => {
-    navigate(`/tiers/${id}`);
+    navigate(`/customers/${id}`);
   };
+
   const rows = users?.map((user: any, index) => [
     user.userId,
     user.totalPoints,
@@ -41,11 +42,11 @@ export default function CustomersTable() {
         <Layout.Section>
           <Card>
             <DataTable
-              columnContentTypes={["text", "text", "text"]}
-              headings={["User Id", "Points", "Tier"]}
+              columnContentTypes={["text", "text", "text", "text"]}
+              headings={["User Id", "Points", "Tier", "Actions"]}
               rows={rows}
               showTotalsInFooter={true}
-              sortable={[false, false, true]}
+              sortable={[false, false, true, false]}
             />
           </Card>
         </Layout.Section>
