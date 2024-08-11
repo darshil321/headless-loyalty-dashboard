@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://institutes-monitored-voted-display.trycloudflare.com"
+application_url = "https://final-dv-appearance-interest.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_discounts,read_orders,read_price_rules,read_products,write_discou
 
 [auth]
 redirect_urls = [
-  "https://institutes-monitored-voted-display.trycloudflare.com/auth/callback",
-  "https://institutes-monitored-voted-display.trycloudflare.com/auth/shopify/callback",
-  "https://institutes-monitored-voted-display.trycloudflare.com/api/auth/callback"
+  "https://final-dv-appearance-interest.trycloudflare.com/auth/callback",
+  "https://final-dv-appearance-interest.trycloudflare.com/auth/shopify/callback",
+  "https://final-dv-appearance-interest.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
