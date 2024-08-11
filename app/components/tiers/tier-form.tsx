@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Form } from "@remix-run/react";
-import {
-  MultiSelector,
-  MultiSelectorTrigger,
-  MultiSelectorInput,
-  MultiSelectorContent,
-  MultiSelectorList,
-  MultiSelectorItem,
-} from "@/components/ui/multi-select";
+// import {
+//   MultiSelector,
+//   MultiSelectorTrigger,
+//   MultiSelectorInput,
+//   MultiSelectorContent,
+//   MultiSelectorList,
+//   MultiSelectorItem,
+// } from "@/components/ui/multi-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,9 +34,9 @@ interface TierFormProps {
 }
 
 export default function TierForm({ tierData, actionData }: TierFormProps) {
-  const [selectedRules, setSelectedRules] = useState<string[]>(
-    tierData?.rules || [],
-  );
+  // const [selectedRules, setSelectedRules] = useState<string[]>(
+  //   tierData?.rules || [],
+  // );
   const [status, setStatus] = useState(tierData?.status || "inactive");
 
   useEffect(() => {
@@ -120,7 +120,21 @@ export default function TierForm({ tierData, actionData }: TierFormProps) {
         <input type="hidden" name="status" value={status} />
       </div>
 
-      <div>
+      {/*===================== Submit Button ==============================*/}
+
+      <div className="w-full flex items-end justify-end">
+        <Button type="submit">
+          {tierData ? "Update Tier" : "Create Tier"}
+        </Button>
+      </div>
+
+      {actionData?.error && <p>Error: {actionData.error}</p>}
+    </Form>
+  );
+}
+
+{
+  /* <div>
         <label htmlFor="rules">Rules</label>
         <MultiSelector values={selectedRules} onValuesChange={setSelectedRules}>
           <MultiSelectorTrigger>
@@ -139,17 +153,5 @@ export default function TierForm({ tierData, actionData }: TierFormProps) {
         {selectedRules.map((rule, index) => (
           <input key={index} type="hidden" name="rules" value={rule} />
         ))}
-      </div>
-
-      {/*===================== Submit Button ==============================*/}
-
-      <div className="w-full flex items-end justify-end">
-        <Button type="submit">
-          {tierData ? "Update Tier" : "Create Tier"}
-        </Button>
-      </div>
-
-      {actionData?.error && <p>Error: {actionData.error}</p>}
-    </Form>
-  );
+      </div> */
 }
