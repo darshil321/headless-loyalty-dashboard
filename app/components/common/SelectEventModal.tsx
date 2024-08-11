@@ -1,5 +1,5 @@
 import { Formik, Form, Field } from "formik";
-// import { string, object } from "yup";
+import * as Yup from "yup";
 import {
   Dialog,
   DialogContent,
@@ -12,12 +12,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "../ui/use-toast";
 import { useDispatch } from "react-redux";
-import { setEventStage, StepEnum } from "@/store/slices/eventSlice";
+import {
+  eventTypeOptions,
+  setEventStage,
+  setSelectedEvent,
+  StepEnum,
+} from "@/store/event/eventSlice";
 
-// Define Yup validation schema
-// const SelectEventSchema = object().shape({
-//   eventType: string().required("Event type is required"),
-// });
+const SelectEventSchema = Yup.object().shape({
+  eventType: Yup.string().required("Event type is required"),
+});
 
 const SelectEventModal = ({
   dialogTrigger,
@@ -27,6 +31,7 @@ const SelectEventModal = ({
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
+
   const { toast } = useToast();
 
   return (
@@ -42,12 +47,13 @@ const SelectEventModal = ({
         </DialogHeader>
         <Formik
           initialValues={{ eventType: "" }}
-          // validationSchema={SelectEventSchema}
+          validationSchema={SelectEventSchema}
           onSubmit={async (values, { setSubmitting }) => {
             setLoading(true);
             try {
               // Handle form submission
               dispatch(setEventStage(StepEnum.SET_EVENT_DATA));
+              dispatch(setSelectedEvent(values.eventType));
               setIsModalOpen(false);
               toast({
                 title: "Event type selected successfully",
@@ -72,11 +78,13 @@ const SelectEventModal = ({
                   name="eventType"
                   id="eventType"
                   className="w-full p-2 border rounded"
+                  placeHolder="Select an option"
                 >
-                  <option value="">Select an event type</option>
-                  <option value="conference">Conference</option>
-                  <option value="workshop">Workshop</option>
-                  <option value="seminar">Seminar</option>
+                  {eventTypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
                 </Field>
                 {touched.eventType && errors.eventType && (
                   <div className="text-red-500">{errors.eventType}</div>

@@ -29,6 +29,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewTier() {
   const actionData = useActionData<typeof action>();
+  console.log("tierDataxxs", actionData);
 
   return <TierForm actionData={actionData} />;
 }

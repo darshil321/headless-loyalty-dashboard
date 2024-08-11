@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { setEventStage, StepEnum } from "@/store/slices/eventSlice";
+import { setEventStage, StepEnum } from "@/store/event/eventSlice";
 
 enum SpendingType {
   FIXED = "fixed",

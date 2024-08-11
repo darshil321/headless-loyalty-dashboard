@@ -6,6 +6,15 @@ export enum StepEnum {
   SET_EVENT_DATA = "seteventdata",
   LIST_TABLE_STAGE = "TableView",
 }
+export enum eventTypeOptionsEnum {
+  ORDER_CREATE = "order create",
+  SIGN_UP = "sign up",
+}
+
+export const eventTypeOptions = [
+  { label: "Order Create", value: eventTypeOptionsEnum.ORDER_CREATE },
+  { label: "Sign UP", value: eventTypeOptionsEnum.SIGN_UP },
+];
 
 export interface EventState {
   selectedEvent: string | null;

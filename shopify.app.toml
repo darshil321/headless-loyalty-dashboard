@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://site-phenomenon-morgan-fantastic.trycloudflare.com"
+application_url = "https://sunrise-lyrics-ill-def.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_discounts,read_orders,read_price_rules,read_products,write_discou
 
 [auth]
 redirect_urls = [
-  "https://permalink-outlined-dome-comparing.trycloudflare.com/auth/callback",
-  "https://permalink-outlined-dome-comparing.trycloudflare.com/auth/shopify/callback",
-  "https://permalink-outlined-dome-comparing.trycloudflare.com/api/auth/callback"
+  "https://sunrise-lyrics-ill-def.trycloudflare.com/auth/callback",
+  "https://sunrise-lyrics-ill-def.trycloudflare.com/auth/shopify/callback",
+  "https://sunrise-lyrics-ill-def.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

@@ -4,7 +4,7 @@ import { logger } from "@/lib/logger";
 
 export const createTierAPI = async (tierData: TierFormData) => {
   try {
-    const apiCall = await post(`/loyalty_tier/`, { tierData });
+    const apiCall = await post(`/loyalty_tier`, { tierData });
 
     const response = apiCall.data;
 

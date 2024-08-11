@@ -1,4 +1,5 @@
-import { useAppBridge } from "@shopify/app-bridge-react";
+// import { useAppBridge } from "@shopify/app-bridge-react";
+import { getSessionToken } from "@shopify/app-bridge/utilities";
 import type {
   AxiosRequestConfig,
   AxiosResponse,
@@ -7,20 +8,25 @@ import type {
   InternalAxiosRequestConfig,
 } from "axios";
 import axios from "axios";
+import { getAppInstance } from "./appBridgeInstance";
+// import { useAppSelector } from "@/store/hooks";
 
 // Axios instance with base URL setup
-const axiosAPIInstance: AxiosInstance = axios.create({
+let axiosAPIInstance: AxiosInstance = axios.create({
   baseURL: `https://9offq7b4x6.execute-api.us-east-2.amazonaws.com/v1`,
   timeout: 10000,
 });
-
 // Function to get the session token
-const getSessionToken = async (): Promise<string> => {
+const fetchSessionTokens = async (host: any): Promise<string> => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  const shopify = useAppBridge();
+  // const shopify = useAppBridge();
   try {
+    const app = getAppInstance(host);
+    const token = await getSessionToken(app);
+    console.log("token", token);
+
     console.log("Fetching session token");
-    const token = await shopify.idToken();
+    // const token = await shopify.idToken();
     console.log("New session token fetched", token);
     return token;
   } catch (error) {
@@ -29,24 +35,25 @@ const getSessionToken = async (): Promise<string> => {
   }
 };
 
-// Request interceptor to add the Authorization header
-axiosAPIInstance.interceptors.request.use(
-  async (
-    config: InternalAxiosRequestConfig,
-  ): Promise<InternalAxiosRequestConfig> => {
-    const token = await getSessionToken();
-    if (config.headers instanceof Headers) {
-      config.headers.set("Authorization", `Bearer ${token}`);
-    } else {
-      config.headers = config.headers || {};
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
+export const setupAxiosInterceptors = (host: any) => {
+  axiosAPIInstance.interceptors.request.use(
+    async (
+      config: InternalAxiosRequestConfig,
+    ): Promise<InternalAxiosRequestConfig> => {
+      const token = await fetchSessionTokens(host);
+      if (config.headers instanceof Headers) {
+        config.headers.set("Authorization", `Bearer ${token}`);
+      } else {
+        config.headers = config.headers || {};
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    },
+  );
+};
 
 // Response interceptor to handle responses and errors
 axiosAPIInstance.interceptors.response.use(
