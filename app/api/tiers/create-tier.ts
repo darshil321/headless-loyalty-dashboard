@@ -1,10 +1,9 @@
 import { post } from "@/lib/axios-api-instance";
-import type { TierFormData } from "@/lib/constants/constants";
 import { logger } from "@/lib/logger";
 
-export const createTierAPI = async (tierData: TierFormData) => {
+export const createTierAPI = async (tierData: any) => {
   try {
-    const apiCall = await post(`/loyalty_tier/`, { tierData });
+    const apiCall = await post(`/loyalty_tiers`, tierData);
 
     const response = apiCall.data;
 

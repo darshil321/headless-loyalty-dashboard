@@ -1,33 +1,39 @@
-import { Link, useNavigate } from "@remix-run/react";
-// import { Page, Card, Button, DataTable } from "@shopify/polaris";
-import { Card, Layout, Page, Text, DataTable } from "@shopify/polaris";
-import { listTiersAPI } from "@/api/tiers/list-tiers";
-import { useEffect, useState } from "react";
+import { useNavigate } from "@remix-run/react";
+import { Card, Layout, Page, DataTable, Button } from "@shopify/polaris";
+import { useEffect } from "react";
 import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { getAllLoyaltyTiers } from "@/store/tier/tierSlice";
+import { EditIcon, DeleteIcon } from "@shopify/polaris-icons";
 
 export default function TiersIndex() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [tiers, setTiers] = useState([]);
 
-  const fetchTiersApi = async () => {
-    const tiers = await listTiersAPI();
-    console.log("tiers", tiers);
-    setTiers(tiers);
-    // dispatch(setTiers(tiers));
-    return tiers;
+  const tiers = useAppSelector((state) => state.tier.loyaltyTiers);
+
+  const handleDelete = (id: string) => {
+    // Implementation for deleting a tier
+    console.log("Deleting tier with ID:", id);
+    // You might call a function here that makes an API request to delete the tier
   };
 
-  // const tiers = useAppSelector((state) => state.tiers.tiers);
+  const handleEdit = (id: string) => {
+    navigate(`/tiers/${id}`);
+  };
 
-  const rows = tiers?.map((tier: any) => [
+  const rows = tiers?.map((tier: any, index) => [
     tier.name,
+    tier.default === true ? "Default" : "Custom",
     tier.status,
-    tier.description,
-    <Link key={tier.id} to={`/tiers/${tier.id}`}>
-      Edit
-    </Link>,
+    <div className="flex space-x-2" key={index}>
+      <Button onClick={() => handleEdit(tier.id)} icon={EditIcon} external />
+      <Button
+        onClick={() => handleDelete(tier.id)}
+        icon={DeleteIcon}
+        external
+      />
+    </div>,
   ]);
 
   useEffect(() => {
@@ -38,7 +44,7 @@ export default function TiersIndex() {
       );
       const { host } = storedConfig;
       setupAxiosInterceptors(host);
-      fetchTiersApi();
+      dispatch(getAllLoyaltyTiers());
     }
   }, []);
 
@@ -53,13 +59,12 @@ export default function TiersIndex() {
       <Layout>
         <Layout.Section>
           <Card>
-            <Text variant="headingMd" as="h5">
-              Tiers
-            </Text>
             <DataTable
               columnContentTypes={["text", "text", "text", "text"]}
-              headings={["Name", "Status", "Description", "Actions"]}
+              headings={["Name", "Type", "Status", "Actions"]}
               rows={rows}
+              showTotalsInFooter={true}
+              sortable={[false, false, true, false]}
             />
           </Card>
         </Layout.Section>

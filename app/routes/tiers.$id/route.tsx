@@ -1,41 +1,38 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { useLoaderData, useActionData } from "@remix-run/react";
-import { getTierAPI } from "@/api/tiers/get-tier";
-import { updateTierAPI } from "@/api/tiers/update-tier";
-import { formSchema } from "@/lib/constants/constants";
+import { useParams } from "@remix-run/react";
 import TierForm from "@/components/tiers/tier-form";
-
-export const loader: LoaderFunction = async ({ params }) => {
-  const tierData = await getTierAPI(params?.tierId as string);
-  return json({ tierData });
-};
-
-export const action: ActionFunction = async ({ request, params }) => {
-  try {
-    const formData = await request.formData();
-    const data = {
-      name: formData.get("name") as string,
-      description: formData.get("description") as string,
-      status: formData.get("status") as "active" | "inactive",
-      rules: formData.getAll("rules") as string[],
-    };
-
-    const validatedData = formSchema.parse(data);
-    await updateTierAPI(params.id ? params.id : "", validatedData);
-
-    return redirect(`/tiers/${params.id}`);
-  } catch (error: any) {
-    return json(
-      { error: error.message || "An error occurred" },
-      { status: 400 },
-    );
-  }
-};
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { getLoyaltyTierById } from "@/store/tier/tierSlice";
+import { useAppSelector } from "@/store/hooks";
+import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
 
 export default function EditTier() {
-  const { tierData } = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const selectedLoyaltyTier = useAppSelector(
+    (state: any) => state.tier.selectedLoyaltyTier,
+  );
 
-  return <TierForm tierData={tierData} actionData={actionData} />;
+  const fetchLoyaltyTierById = async () => {
+    try {
+      await dispatch(getLoyaltyTierById(id));
+    } catch (error) {
+      console.error("Error fetching tier data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedConfig = JSON.parse(
+        sessionStorage.getItem("app-bridge-config") || "{}",
+      );
+      const { host } = storedConfig;
+      setupAxiosInterceptors(host);
+      fetchLoyaltyTierById();
+    }
+  }, [dispatch]);
+
+  if (!selectedLoyaltyTier) return <h1>Loading</h1>;
+
+  return <TierForm tierData={selectedLoyaltyTier} isUpdate />;
 }
