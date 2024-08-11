@@ -1,25 +1,19 @@
-import { useParams } from "@remix-run/react";
+import { useNavigate, useParams } from "@remix-run/react";
 import TierForm from "@/components/tiers/tier-form";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
-import { getLoyaltyTierById } from "@/store/tier/tierSlice";
+import { clearLoyaltyTier, getLoyaltyTierById } from "@/store/tier/tierSlice";
 import { useAppSelector } from "@/store/hooks";
 import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
 
 export default function EditTier() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const selectedLoyaltyTier = useAppSelector(
     (state: any) => state.tier.selectedLoyaltyTier,
   );
-
-  const fetchLoyaltyTierById = async () => {
-    try {
-      await dispatch(getLoyaltyTierById(id));
-    } catch (error) {
-      console.error("Error fetching tier data:", error);
-    }
-  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -28,11 +22,21 @@ export default function EditTier() {
       );
       const { host } = storedConfig;
       setupAxiosInterceptors(host);
-      fetchLoyaltyTierById();
+      dispatch(clearLoyaltyTier()); // Clear previous tier data right before fetching new
+      dispatch(getLoyaltyTierById(id)).catch((error: any) => {
+        console.error("Error fetching tier data:", error);
+        navigate("/error"); // navigate to an error page or handle the error appropriately
+      });
     }
-  }, [dispatch]);
 
-  if (!selectedLoyaltyTier) return <h1>Loading</h1>;
+    // Cleanup function to reset the tier data when component unmounts
+    return () => {
+      dispatch(clearLoyaltyTier());
+    };
+  }, [id, dispatch, navigate]);
 
+  if (!selectedLoyaltyTier) {
+    return <h1>Loading...</h1>; // Ensure a clear loading state is shown each time
+  }
   return <TierForm tierData={selectedLoyaltyTier} isUpdate />;
 }
