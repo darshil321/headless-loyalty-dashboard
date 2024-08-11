@@ -19,6 +19,7 @@ const getSessionToken = async (): Promise<string> => {
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const shopify = useAppBridge();
   try {
+    console.log("Fetching session token");
     const token = await shopify.idToken();
     console.log("New session token fetched", token);
     return token;
