@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://site-phenomenon-morgan-fantastic.trycloudflare.com"
+application_url = "https://bone-hottest-fu-tv.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_discounts,read_orders,read_price_rules,read_products,write_discou
 
 [auth]
 redirect_urls = [
-  "https://site-phenomenon-morgan-fantastic.trycloudflare.com/auth/callback",
-  "https://site-phenomenon-morgan-fantastic.trycloudflare.com/auth/shopify/callback",
-  "https://site-phenomenon-morgan-fantastic.trycloudflare.com/api/auth/callback"
+  "https://bone-hottest-fu-tv.trycloudflare.com/auth/callback",
+  "https://bone-hottest-fu-tv.trycloudflare.com/auth/shopify/callback",
+  "https://bone-hottest-fu-tv.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
