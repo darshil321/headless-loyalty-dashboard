@@ -1,6 +1,5 @@
-import { Form, useLoaderData, useActionData } from "@remix-run/react";
-import type { LoaderFunction, ActionFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
+import { useEffect, useState } from "react";
+import { Form } from "@remix-run/react";
 import {
   MultiSelector,
   MultiSelectorTrigger,
@@ -19,58 +18,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getTierAPI } from "@/api/tiers/get-tier";
-import { updateTierAPI } from "@/api/tiers/update-tier";
-import { createTierAPI } from "@/api/tiers/create-tier";
-import type { TierFormData } from "@/lib/constants/constants";
-import { formSchema, ruleOptions } from "@/lib/constants/constants";
-import { useEffect, useState } from "react";
+import { ruleOptions } from "@/lib/constants/constants";
 
-export const loader: LoaderFunction = async ({ params }) => {
-  if (params.id) {
-    const tierData = await getTierAPI(params.id);
-    return json({ tierData });
-  }
-  return json({ tierData: null });
-};
+interface TierFormProps {
+  tierData?: {
+    id?: string;
+    name: string;
+    description: string;
+    status: "active" | "inactive";
+    rules: string[];
+  };
+  actionData?: { error?: string };
+}
 
-export const action: ActionFunction = async ({ request }) => {
-  try {
-    const formData = await request.formData();
-    if (!formData) {
-      return json({ error: "Invalid request" }, { status: 400 });
-    }
-
-    const data = {
-      name: formData.get("name") as string,
-      description: formData.get("description") as string,
-      status: formData.get("status") as "active" | "inactive",
-      rules: formData.getAll("rules") as string[],
-    };
-
-    const validatedData = formSchema.parse(data) as TierFormData;
-    const tierId = formData.get("tierId") as string | null;
-
-    let result;
-    if (tierId) {
-      result = await updateTierAPI(tierId, validatedData);
-    } else {
-      result = await createTierAPI(validatedData);
-    }
-
-    return redirect(`/tiers/${result.id}`);
-  } catch (error: any) {
-    console.error("Form submission error:", error);
-    return json(
-      { error: error?.message || "An unexpected error occurred" },
-      { status: 400 },
-    );
-  }
-};
-
-export default function TierForm() {
-  const { tierData } = useLoaderData<typeof loader>();
-  const actionData = useActionData<typeof action>();
+export default function TierForm({ tierData, actionData }: TierFormProps) {
   const [selectedRules, setSelectedRules] = useState<string[]>(
     tierData?.rules || [],
   );
@@ -78,9 +39,10 @@ export default function TierForm() {
 
   useEffect(() => {
     if (actionData?.error) {
+      console.log("tierData", tierData, actionData);
       console.error("Action Error:", actionData.error);
     }
-  }, [actionData]);
+  }, [actionData, tierData]);
 
   return (
     <Form method="post">
@@ -110,7 +72,7 @@ export default function TierForm() {
         <Select
           name="status"
           value={status}
-          onValueChange={setStatus}
+          onValueChange={setStatus as any}
           defaultValue={tierData?.status || "inactive"}
         >
           <SelectTrigger>

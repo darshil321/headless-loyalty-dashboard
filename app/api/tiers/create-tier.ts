@@ -1,6 +1,6 @@
 import { post } from "@/lib/axios-api-instance";
+import type { TierFormData } from "@/lib/constants/constants";
 import { logger } from "@/lib/logger";
-import type { TierFormData } from "@/routes/tiers_.$tierId/constants";
 
 export const createTierAPI = async (tierData: TierFormData) => {
   try {
@@ -10,11 +10,26 @@ export const createTierAPI = async (tierData: TierFormData) => {
 
     logger.info("createTierAPI", "createTierAPI", response);
     return response;
-  } catch (e) {
+  } catch (e: any) {
     logger.error("createTierAPI", "createTierAPI", e);
+    let errorMessage = "An unknown error occurred";
 
-    const { _response: errorResponse } = e as any;
-    const err = new Error(JSON.parse(errorResponse.body).error);
+    if (e && e._response) {
+      try {
+        const errorResponse = JSON.parse(e._response);
+        errorMessage = errorResponse.error || errorMessage;
+      } catch (parseError) {
+        logger.error(
+          "createTierAPI",
+          "Failed to parse error response",
+          parseError,
+        );
+      }
+    } else {
+      errorMessage = e.message || errorMessage;
+    }
+
+    const err = new Error(errorMessage);
     throw err;
   }
 };
