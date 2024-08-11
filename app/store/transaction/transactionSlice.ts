@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getTransactionAPI } from "@/api/transaction/get-transaction";
+import { getTransactionByUserIdAPI } from "@/api/transaction/get-transaction";
 import { listTransactionsAPI } from "@/api/transaction/list-transactions";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // Define initial state for the slice
@@ -13,9 +13,9 @@ const initialState = {
 // Define async thunk for fetching a single loyalty configuration by ID
 export const getLoyaltyTransactionByUserId: any = createAsyncThunk(
   "loyaltyTransaction/getById",
-  async (loyaltyId: any, thunkAPI) => {
+  async (userId: any, thunkAPI) => {
     try {
-      const response = await getTransactionAPI(loyaltyId);
+      const response = await getTransactionByUserIdAPI(userId);
       return response;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data);

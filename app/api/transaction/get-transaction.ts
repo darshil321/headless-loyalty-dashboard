@@ -1,10 +1,10 @@
 import { get } from "@/lib/axios-api-instance";
 import { logger } from "@/lib/logger";
 
-export const getTransactionAPI = async (transactionId: string) => {
+export const getTransactionByUserIdAPI = async (userId: string) => {
   try {
-    console.log("here transactionId", transactionId);
-    const apiCall = await get(`/transaction/${transactionId}`);
+    console.log("here userId", userId);
+    const apiCall = await get(`/transaction/${userId}`);
     const response = apiCall.data;
 
     logger.info("getTransactionAPI", "getTransactionAPI", response);
