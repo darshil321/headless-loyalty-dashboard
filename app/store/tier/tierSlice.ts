@@ -84,7 +84,11 @@ export const getAllLoyaltyTiers: any = createAsyncThunk(
 const loyaltySlice = createSlice({
   name: "loyaltyTier",
   initialState,
-  reducers: {},
+  reducers: {
+    clearLoyaltyTier: (state) => {
+      state.selectedLoyaltyTier = null;
+    },
+  },
   extraReducers: (builder) => {
     // Handle createLoyaltyTier pending and fulfilled actions
     builder.addCase(createLoyaltyTier.pending, (state) => {
@@ -157,5 +161,5 @@ const loyaltySlice = createSlice({
 });
 
 // Export actions and reducer
-// export const {} = loyaltySlice.actions;
+export const { clearLoyaltyTier } = loyaltySlice.actions;
 export default loyaltySlice.reducer;

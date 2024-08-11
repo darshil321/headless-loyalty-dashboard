@@ -3,7 +3,7 @@ import { logger } from "@/lib/logger";
 
 export const deleteTierAPI = async (tierId: string) => {
   try {
-    const apiCall = await _delete(`/loyalty_tier/${tierId}`);
+    const apiCall = await _delete(`/loyalty_tiers/${tierId}`);
     const response = apiCall.data;
     logger.info("deleteTierAPI", "Successfully delete tier", response);
     return response;

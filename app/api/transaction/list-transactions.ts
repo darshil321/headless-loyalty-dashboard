@@ -1,17 +1,22 @@
 import { get } from "@/lib/axios-api-instance";
 import { logger } from "@/lib/logger";
 
-export const getTierAPI = async (tierId: string) => {
+export const listTransactionsAPI = async () => {
   try {
-    console.log("here tierid", tierId);
-    const apiCall = await get(`/loyalty_tiers/${tierId}`);
-    console.log("here");
+    const apiCall = await get(`/transaction`);
+
+    logger.info(
+      "listTransactionsAPI before",
+      "listTransactionsAPI before",
+      apiCall,
+    );
+
     const response = apiCall.data;
 
-    logger.info("getTierAPI", "getTierAPI", response);
+    logger.info("listTransactionsAPI", "listTransactionsAPI", response);
     return response;
   } catch (e: any) {
-    logger.error("getTierAPI", "getTierAPI", e);
+    logger.error("listTransactionsAPI", "listTransactionsAPI", e);
 
     let errorMessage = "An unknown error occurred";
 
@@ -21,7 +26,7 @@ export const getTierAPI = async (tierId: string) => {
         errorMessage = errorResponse.error || errorMessage;
       } catch (parseError) {
         logger.error(
-          "getTierAPI",
+          "listTransactionsAPI",
           "Failed to parse error response",
           parseError,
         );

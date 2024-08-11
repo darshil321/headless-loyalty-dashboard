@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Formik, Form as FormikForm, FieldArray } from "formik";
 import * as Yup from "yup";
 import {
   TextField as PolarisTextField,
-  Button as PolarisButton,
   Select as PolarisSelect,
   Card,
   Layout,
@@ -13,34 +12,49 @@ import {
 } from "@shopify/polaris";
 import { useAppDispatch } from "@/store/hooks";
 import { createLoyaltyTier, updateLoyaltyTier } from "@/store/tier/tierSlice";
+import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
+import { useNavigate } from "@remix-run/react";
 
-// const validationSchema = Yup.object({
-//   name: Yup.string().required("Name is required"),
-//   description: Yup.string().required("Description is required"),
-//   status: Yup.string().required("Status is required"),
-//   default: Yup.boolean(),
-//   rules: Yup.array().of(
-//     Yup.object({
-//       ruleType: Yup.string().required("Rule type is required"),
-//       operator: Yup.string().required("Operator is required"),
-//       value: Yup.number().required("Value is required"),
-//     }),
-//   ),
-//   benefits: Yup.array().of(
-//     Yup.object({
-//       benefitType: Yup.string().required("Benefit type is required"),
-//       description: Yup.string().required("Description is required"),
-//       criteria: Yup.string().required("Criteria is required"),
-//       value: Yup.number().required("Value is required"),
-//     }),
-//   ),
-// });
+const validationSchema = Yup.object({
+  name: Yup.string().required("Name is required"),
+  description: Yup.string().required("Description is required"),
+  status: Yup.string().required("Status is required"),
+  default: Yup.boolean(),
+  rules: Yup.array().of(
+    Yup.object({
+      ruleType: Yup.string().required("Rule type is required"),
+      operator: Yup.string().required("Operator is required"),
+      value: Yup.number().required("Value is required"),
+    }),
+  ),
+  benefits: Yup.array().of(
+    Yup.object({
+      benefitType: Yup.string().required("Benefit type is required"),
+      description: Yup.string().required("Description is required"),
+      criteria: Yup.string().required("Criteria is required"),
+      value: Yup.number().required("Value is required"),
+    }),
+  ),
+});
 
 const TierForm = ({ tierData, actionData, isUpdate }: any) => {
+  const [submitted, setSubmitted] = React.useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedConfig = JSON.parse(
+        sessionStorage.getItem("app-bridge-config") || "{}",
+      );
+      const { host } = storedConfig;
+      setupAxiosInterceptors(host);
+    }
+  }, [submitted]);
+
   const dispatch = useAppDispatch();
-  console.log("here", tierData);
+  const navigate = useNavigate();
   const submitTierData = async (values: any) => {
     try {
+      setSubmitted(!submitted);
       if (isUpdate) {
         const { id, ...restValues } = values;
         const _values = { loyaltyTier: restValues, id };
@@ -49,6 +63,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
       } else {
         await dispatch(createLoyaltyTier(values)); // Dispatch create action
       }
+      navigate("/tiers");
     } catch (error: any) {
       console.log("error", error);
     }
@@ -61,12 +76,12 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
         description: tierData?.description || "",
         status: tierData?.status || "inactive",
         default: tierData?.default || false,
-        rules: tierData?.rules || [{ ruleType: "", operator: "", value: 0 }],
+        rules: tierData?.rules || [{ ruleType: "", operator: "", value: "0" }],
         benefits: tierData?.benefits || [
-          { benefitType: "", description: "", criteria: "", value: 0 },
+          { benefitType: "", description: "", criteria: "", value: "0" },
         ],
       }}
-      // validationSchema={validationSchema}
+      validationSchema={validationSchema}
       onSubmit={async (values, { setSubmitting, resetForm }) => {
         console.log("values", values);
         await submitTierData(values);
@@ -81,7 +96,6 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
         handleChange,
         handleBlur,
         handleSubmit,
-        getFieldProps,
         isSubmitting,
         setFieldValue,
       }) => (
@@ -89,7 +103,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
           <Page
             title="Tiers"
             primaryAction={{
-              content: "Save Tier",
+              content: tierData ? "Save Tier" : "Create Tier",
               onAction: handleSubmit,
               loading: isSubmitting,
             }}
@@ -170,14 +184,26 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                               key={index}
                               className="grid grid-cols-12 gap-3 items-end mt-3"
                             >
-                              <div className="col-span-4">
+                              <div className="col-span-3">
                                 <PolarisSelect
                                   label="Rule Type"
                                   name={`rules[${index}].ruleType`}
                                   options={[
+                                    { label: "Select Type", value: "" },
                                     { label: "Points", value: "points" },
                                   ]}
-                                  {...getFieldProps(`rules[${index}].ruleType`)}
+                                  value={values.rules[index].ruleType}
+                                  onChange={(value) => {
+                                    console.log("value", value);
+                                    setFieldValue(
+                                      `rules[${index}].ruleType`,
+                                      value,
+                                    );
+                                  }}
+                                  error={
+                                    touched.rules?.[index]?.ruleType &&
+                                    errors.rules?.[index]?.ruleType
+                                  }
                                 />
                               </div>
                               <div className="col-span-3">
@@ -185,10 +211,22 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                   label="Operator"
                                   name={`rules[${index}].operator`}
                                   options={[
+                                    { label: "Select Operator", value: "" },
                                     { label: ">", value: ">" },
                                     { label: "<", value: "<" },
                                   ]}
-                                  {...getFieldProps(`rules[${index}].operator`)}
+                                  value={values.rules[index].operator}
+                                  onChange={(value) => {
+                                    console.log("value", value);
+                                    setFieldValue(
+                                      `rules[${index}].operator`,
+                                      value,
+                                    );
+                                  }}
+                                  error={
+                                    touched.rules?.[index]?.operator &&
+                                    errors.rules?.[index]?.operator
+                                  }
                                 />
                               </div>
                               <div className="col-span-3">
@@ -196,13 +234,16 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                   label="Value"
                                   name={`rules[${index}].value`}
                                   type="number"
-                                  value={values.rules[index].value}
+                                  value={values.rules[index].value?.toString()}
                                   onChange={(value) => {
+                                    const numericValue =
+                                      value === "" ? "" : Number(value);
                                     setFieldValue(
                                       `rules[${index}].value`,
-                                      Number(value),
+                                      numericValue,
                                     );
                                   }}
+                                  onBlur={handleBlur}
                                   error={
                                     touched.rules?.[index]?.value &&
                                     errors.rules?.[index]?.value
@@ -251,12 +292,24 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                     label="Benefit Type"
                                     name={`benefits[${index}].benefitType`}
                                     options={[
+                                      {
+                                        label: "Select Type",
+                                        value: "",
+                                      },
                                       { label: "Shipping", value: "shipping" },
                                       { label: "Discount", value: "discount" },
                                     ]}
-                                    {...getFieldProps(
-                                      `benefits[${index}].benefitType`,
-                                    )}
+                                    value={values.benefits[index].benefitType}
+                                    onChange={(value) =>
+                                      setFieldValue(
+                                        `benefits[${index}].benefitType`,
+                                        value,
+                                      )
+                                    }
+                                    error={
+                                      touched.benefits?.[index]?.benefitType &&
+                                      errors.benefits?.[index]?.benefitType
+                                    }
                                   />
                                 </div>
                                 <div className="col-span-2">
@@ -264,16 +317,13 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                     label="Description"
                                     name={`benefits[${index}].description`}
                                     value={values.benefits[index].description}
-                                    onChange={(value) => {
+                                    onChange={(value) =>
                                       setFieldValue(
                                         `benefits[${index}].description`,
                                         value,
-                                      );
-                                    }}
-                                    error={
-                                      touched.benefits?.[index]?.description &&
-                                      errors.benefits?.[index]?.description
+                                      )
                                     }
+                                    onBlur={handleBlur}
                                   />
                                 </div>
                                 <div className="col-span-2">
@@ -281,6 +331,10 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                     label="Criteria"
                                     name={`benefits[${index}].criteria`}
                                     options={[
+                                      {
+                                        label: "Select Criteria",
+                                        value: "",
+                                      },
                                       {
                                         label: "Order Value",
                                         value: "order_value",
@@ -290,9 +344,17 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                         value: "total_order",
                                       },
                                     ]}
-                                    {...getFieldProps(
-                                      `benefits[${index}].criteria`,
-                                    )}
+                                    value={values.benefits[index].criteria}
+                                    onChange={(value) =>
+                                      setFieldValue(
+                                        `benefits[${index}].criteria`,
+                                        value,
+                                      )
+                                    }
+                                    error={
+                                      touched.benefits?.[index]?.criteria &&
+                                      errors.benefits?.[index]?.criteria
+                                    }
                                   />
                                 </div>
                                 <div className="col-span-2">
@@ -300,14 +362,20 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                     label="Value"
                                     name={`benefits[${index}].value`}
                                     type="number"
-                                    value={values.benefits[index].value}
+                                    value={values.benefits[
+                                      index
+                                    ].value?.toString()}
                                     onChange={(value) => {
-                                      console.log("benefits value", value);
+                                      const numericValue =
+                                        value === "" ? "" : Number(value);
+
+                                      // Directly set the field value, ensuring it's treated as a numeric type
                                       setFieldValue(
                                         `benefits[${index}].value`,
-                                        Number(value),
+                                        numericValue,
                                       );
                                     }}
+                                    onBlur={handleBlur}
                                     error={
                                       touched.benefits?.[index]?.value &&
                                       errors.benefits?.[index]?.value
@@ -343,11 +411,11 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                     </FieldArray>
                   </div>
 
-                  <div className="flex justify-end mt-5">
+                  {/* <div className="flex justify-end mt-5">
                     <PolarisButton submit variant="primary">
                       {tierData ? "Update Tier" : "Create Tier"}
                     </PolarisButton>
-                  </div>
+                  </div> */}
                   {actionData?.error && <p>Error: {actionData.error}</p>}
                 </Card>
               </Layout.Section>

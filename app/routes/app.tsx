@@ -29,7 +29,6 @@ export default function App() {
         <Link to="/tiers">Tiers</Link>
         <Link to="/customers">Customers</Link>
         <Link to="/settings">Settings</Link>
-        <Link to="/app/additional">AdditionalPage</Link>
       </NavMenu>
       <Outlet />
     </AppProvider>
