@@ -12,7 +12,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "../ui/use-toast";
 import { useDispatch } from "react-redux";
-import { setEventStage, StepEnum } from "@/store/slices/eventSlice";
+import { setEventStage, StepEnum } from "@/store/event/eventSlice";
 
 // Define Yup validation schema
 // const SelectEventSchema = object().shape({

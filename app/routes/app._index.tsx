@@ -16,7 +16,7 @@ import {
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { useAppDispatch } from "@/store/hooks";
-import { setSessionToken } from "@/store/slices/sessionSlice";
+import { setSessionToken } from "@/store/session/sessionSlice";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);

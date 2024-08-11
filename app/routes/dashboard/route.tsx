@@ -9,9 +9,9 @@ import EventBenefits from "@/components/event/EventBenefits";
 import { authenticate } from "@/shopify.server";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { listEventsAPI } from "@/api/events/list-events";
-import { useAppSelector } from "@/store/hooks";
-import { StepEnum } from "@/store/slices/eventSlice";
 import SelectEventModal from "@/components/common/SelectEventModal";
+import { StepEnum } from "@/store/event/eventSlice";
+import { useSelector } from "react-redux";
 
 type EventDetails = {
   backendValue: string;
@@ -51,7 +51,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("events");
-  const eventStage = useAppSelector((state) => state.event.eventStage);
+  const eventStage = useSelector((state: any) => state.event.eventStage);
 
   useEffect(() => {
     const fetchData = async () => {
