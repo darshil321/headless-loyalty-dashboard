@@ -4,7 +4,7 @@ import tierReducer from "./tier/tierSlice";
 import sessionSlice from "./session/sessionSlice";
 import eventSlice from "./event/eventSlice";
 import userReducer from "./user/userSlice";
-// import transactionReducer from "./transaction/transactionSlice";
+import transactionReducer from "./transaction/transactionSlice";
 import configReducer from "./config/configSlice";
 
 const rootReducer = combineReducers({
@@ -13,7 +13,7 @@ const rootReducer = combineReducers({
   session: sessionSlice,
   event: eventSlice,
   user: userReducer,
-  // transaction: transactionReducer,
+  transaction: transactionReducer,
   config: configReducer,
 });
 
