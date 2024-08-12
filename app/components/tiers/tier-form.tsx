@@ -13,7 +13,7 @@ import {
 import { useAppDispatch } from "@/store/hooks";
 import { createLoyaltyTier, updateLoyaltyTier } from "@/store/tier/tierSlice";
 import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
-import { useNavigate, useParams } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
@@ -209,7 +209,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                   name={`rules[${index}].ruleType`}
                                   options={[
                                     { label: "Select Type", value: "" },
-                                    { label: "Points", value: "points" },
+                                    { label: "Points", value: "POINTS" },
                                   ]}
                                   value={values.rules[index].ruleType}
                                   onChange={(value) => {

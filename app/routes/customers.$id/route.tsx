@@ -88,14 +88,27 @@ export default function CustomerDetails() {
   const transactionItems = userTransactions?.map((transaction: any) => (
     <AccordionItem key={transaction.id} value={transaction.id}>
       <AccordionTrigger>
-        {`${transaction.type === "DEBIT" ? "-" : "+"}${transaction.points} Points - Expires At ${new Date(transaction.expiresAt).toLocaleDateString()}`}
+        <div className="flex justify-between w-full pt-2">
+          <div>
+            {`${transaction.type === "DEBIT" ? "-" : "+"}${transaction.points} Points ${transaction.type === "CREDIT" ? "- Expires At " + new Date(transaction.expiresAt).toLocaleDateString() : ""}`}
+          </div>
+          <div>{`${transaction.status}`}</div>
+        </div>
       </AccordionTrigger>
       <AccordionContent>
-        <BlockStack align="space-between">
+        <BlockStack>
           <Text as="p" variant="bodyMd">
             {transaction.description}
           </Text>
-          <Badge>{transaction.type}</Badge>
+
+          <div className="py-2">
+            <Badge
+              tone={transaction.type === "DEBIT" ? "critical" : "success"}
+              size="large"
+            >
+              {transaction.type}
+            </Badge>
+          </div>
         </BlockStack>
       </AccordionContent>
     </AccordionItem>
@@ -140,6 +153,9 @@ export default function CustomerDetails() {
 
           <div className="mt-5">
             <Card>
+              <Text as="h2" variant="headingMd">
+                Transactions
+              </Text>
               <Accordion collapsible type="single">
                 {transactionItems}
               </Accordion>
@@ -149,7 +165,7 @@ export default function CustomerDetails() {
         <Layout.Section variant="oneThird">
           <Card>
             <BlockStack gap={"200"} align="space-between">
-              <Text as="h2" variant="headingMd">
+              {/* <Text as="h2" variant="headingMd">
                 Balance
               </Text>
               <Text as="h2" variant="bodyMd">
@@ -157,17 +173,17 @@ export default function CustomerDetails() {
               </Text>
               <Text as="h2" variant="bodyMd">
                 Balance data
-              </Text>
+              </Text> */}
               <BlockStack align="space-between">
-                <Text as="h1" variant="headingMd">
+                <Text as="h1" variant="headingLg">
                   Points: {selectedCustomer.wallet.totalPoints}
                 </Text>
               </BlockStack>
-              <Button onClick={() => console.log("Redeem Points")}>
+              {/* <Button onClick={() => console.log("Redeem Points")}>
                 Redeem Points
               </Button>
 
-              <Button onClick={handleAdjustPoints}>Adjust Points</Button>
+              <Button onClick={handleAdjustPoints}>Adjust Points</Button> */}
             </BlockStack>
           </Card>
         </Layout.Section>
