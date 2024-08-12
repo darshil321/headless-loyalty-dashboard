@@ -8,11 +8,11 @@ import EventRules from "@/components/event/EventRules";
 import EventBenefits from "@/components/event/EventBenefits";
 import { authenticate } from "@/shopify.server";
 import type { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { listEventsAPI } from "@/api/events/list-events";
 import SelectEventModal from "@/components/common/SelectEventModal";
-import { StepEnum } from "@/store/event/eventSlice";
+import { getAllLoyaltyEvents, StepEnum } from "@/store/event/eventSlice";
 import { useSelector } from "react-redux";
 import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 type EventDetails = {
   backendValue: string;
@@ -53,6 +53,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("events");
   const eventStage = useSelector((state: any) => state.event.eventStage);
+  const dispatch = useAppDispatch();
+  const events = useAppSelector((state) => state.event.loyaltyEvents);
+  console.log("events", events);
 
   useEffect(() => {
     // Ensure sessionStorage is accessed only client-side
@@ -62,20 +65,8 @@ export default function Dashboard() {
       );
       const { host } = storedConfig;
       setupAxiosInterceptors(host);
+      dispatch(getAllLoyaltyEvents());
     }
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await listEventsAPI();
-        console.log("Data fetched", response);
-      } catch (error) {
-        console.error("Error fetching data: ", error);
-      }
-    };
-
-    fetchData();
   }, []);
 
   const EventDisplay = () => {
@@ -121,7 +112,7 @@ export default function Dashboard() {
       case StepEnum.LIST_TABLE_STAGE:
         return (
           <div>
-            <EventsTable />
+            <EventsTable events={events} />
           </div>
         );
     }

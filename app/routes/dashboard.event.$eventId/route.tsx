@@ -1,16 +1,42 @@
-import EventForm from "@/components/event/EventForm";
+import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
+import {
+  clearSelectedLoyaltyEvent,
+  getLoyaltyEventById,
+} from "@/store/event/eventSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useNavigate, useParams } from "@remix-run/react";
+import { useEffect } from "react";
 
-export async function loader({ params }: { params: any }) {
-  console.log("params", params);
-  return null;
-}
+export default function EditEvent() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-const route = () => {
-  return (
-    <div>
-      <EventForm />
-    </div>
+  const selectedTierEvent = useAppSelector(
+    (state) => state.event.selectedLoyaltyEvent,
   );
-};
 
-export default route;
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedConfig = JSON.parse(
+        sessionStorage.getItem("app-bridge-config") || "{}",
+      );
+      const { host } = storedConfig;
+      setupAxiosInterceptors(host);
+      dispatch(getLoyaltyEventById(id)).catch((error: any) => {
+        console.log("Error fetching event data:", error);
+        navigate("/error");
+      });
+    }
+
+    return () => {
+      dispatch(clearSelectedLoyaltyEvent());
+    };
+  }, [id]);
+
+  if (!selectedTierEvent) {
+    return <div>Loading...</div>;
+  }
+
+  return <EventForm eventData={selectedTierEvent} isUpdate />;
+}

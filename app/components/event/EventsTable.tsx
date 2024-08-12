@@ -12,7 +12,7 @@ import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Avatar } from "../ui/avatar";
 
-const EventsTable = () => {
+const EventsTable = ({ events }: { events: any }) => {
   return (
     <div className="w-full flex flex-col h-fit">
       <div className="w-full flex justify-end my-3 items-end">

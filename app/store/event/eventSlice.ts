@@ -1,5 +1,8 @@
 import { createEventAPI } from "@/api/events/create-event";
-import { listTiersAPI } from "@/api/tiers/list-tiers";
+import { deleteTierEventAPI } from "@/api/events/delete-tier-event";
+import { getTierEventAPI } from "@/api/events/get-tier-event";
+import { listEventsAPI } from "@/api/events/list-events";
+import { updateTierEventAPI } from "@/api/events/update-tier-event";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
@@ -54,7 +57,10 @@ export const updateLoyaltyEvent: any = createAsyncThunk(
   "loyaltyEvent/update",
   async (loyaltyData: any, thunkAPI) => {
     try {
-      const response = await updateTierAPI(loyaltyData.id, loyaltyData);
+      const response = await updateTierEventAPI(
+        loyaltyData.id,
+        loyaltyData.loyaltyEventData,
+      );
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data);
@@ -66,7 +72,7 @@ export const deleteLoyaltyEvent: any = createAsyncThunk(
   "loyaltyEvent/delete",
   async (loyaltyId: any, thunkAPI) => {
     try {
-      await deleteTierAPI(loyaltyId);
+      await deleteTierEventAPI(loyaltyId);
       return loyaltyId; // Return the deleted loyaltyId
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data);
@@ -79,7 +85,7 @@ export const getLoyaltyEventById: any = createAsyncThunk(
   "loyaltyEvent/getById",
   async (loyaltyId: string, thunkAPI) => {
     try {
-      const response: any = getTierAPI(loyaltyId);
+      const response: any = getTierEventAPI(loyaltyId);
       return response;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data);
@@ -93,7 +99,7 @@ export const getAllLoyaltyEvents: any = createAsyncThunk(
   async (_, thunkAPI) => {
     try {
       console.log("token");
-      const response = await listTiersAPI();
+      const response = await listEventsAPI();
       console.log("response", response);
       return response;
     } catch (error: any) {
@@ -106,6 +112,9 @@ export const eventSlice = createSlice({
   name: "event",
   initialState,
   reducers: {
+    clearSelectedLoyaltyEvent: (state) => {
+      state.selectedLoyaltyEvent = null;
+    },
     setSelectedEvent: (state, action: PayloadAction<string | null>) => {
       state.selectedEvent = action.payload;
     },
@@ -184,6 +193,7 @@ export const eventSlice = createSlice({
   },
 });
 
-export const { setSelectedEvent, setEventStage } = eventSlice.actions;
+export const { setSelectedEvent, setEventStage, clearSelectedLoyaltyEvent } =
+  eventSlice.actions;
 
 export default eventSlice.reducer;
