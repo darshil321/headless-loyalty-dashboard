@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "@remix-run/react";
+import { useNavigate } from "@remix-run/react";
 import { Formik, Form as FormikForm } from "formik";
 import * as Yup from "yup";
 import { TextField, Page, Layout, Select, Card } from "@shopify/polaris";
@@ -10,25 +10,6 @@ import {
   updateLoyaltyEvent,
 } from "@/store/event/eventSlice";
 import { getAllLoyaltyTiers } from "@/store/tier/tierSlice";
-
-const validationSchema = Yup.object({
-  points: Yup.number()
-    .required("Points are required")
-    .min(0, "Points must be non-negative"),
-  expiryDate: Yup.date().required("Expiry date is required"),
-  minOrderValue: Yup.number()
-    .required("Minimum order value is required")
-    .min(0, "Minimum order value must be non-negative"),
-  maxOrderValue: Yup.number()
-    .required("Maximum order value is required")
-    .min(0, "Maximum order value must be non-negative"),
-  spendingLimit: Yup.number()
-    .required("Spending limit is required")
-    .min(0, "Spending limit must be non-negative"),
-  spendingType: Yup.string().required("Spending type is required"),
-  type: Yup.string().required(" type is required"),
-  tierId: Yup.string().required("Tier is required"),
-});
 
 const LoyaltyEventForm = ({
   eventData,
@@ -41,15 +22,13 @@ const LoyaltyEventForm = ({
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const tiers = useAppSelector((state) => state.tier.loyaltyTiers);
-  const event = useAppSelector((state) => state.event.selectedEvent);
+  const eventType = useAppSelector((state) => state.event.selectedEvent);
 
   const tierOptions = tiers?.map((tier: any) => ({
     label: tier.name,
     value: tier.id,
   }));
-  const params = useSearchParams();
-  console.log("params", params);
-  console.log("eventName", event);
+  console.log("eventType", eventType);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -62,15 +41,40 @@ const LoyaltyEventForm = ({
     }
   }, [submitted]);
 
-  const submitEventData = async (values: any) => {
+  const getValidationSchema = () => {
+    let schema = {
+      points: Yup.number()
+        .required("Points are required")
+        .min(0, "Points must be non-negative"),
+      expiryDate: Yup.date().required("Expiry date is required"),
+      type: Yup.string().required("Event type is required"),
+      tierId: Yup.string().required("Tier is required"),
+    };
+
+    if (eventType !== "SIGN_UP") {
+      schema = {
+        ...schema,
+        minOrderValue: Yup.number()
+          .required("Minimum order value is required")
+          .min(0, "Minimum order value must be non-negative"),
+        maxOrderValue: Yup.number()
+          .required("Maximum order value is required")
+          .min(0, "Maximum order value must be non-negative"),
+        spendingLimit: Yup.number()
+          .required("Spending limit is required")
+          .min(0, "Spending limit must be non-negative"),
+        spendingType: Yup.string().required("Spending type is required"),
+      };
+    }
+
+    return Yup.object(schema);
+  };
+
+  const submitEventData = async (values) => {
     try {
       setSubmitted(true);
-      console.log("valuesdata", values);
-      values.event = event;
-
       if (isUpdate) {
         const { id, ...restValues } = values;
-
         await dispatch(updateLoyaltyEvent({ id, ...restValues }));
       } else {
         await dispatch(createLoyaltyEvent(values));
@@ -86,7 +90,7 @@ const LoyaltyEventForm = ({
   return (
     <Formik
       initialValues={{
-        points: eventData?.points || 0,
+        points: eventData?.points + 0 || 0,
         expiryDate: eventData?.expiryDate || "",
         minOrderValue: eventData?.minOrderValue || null,
         maxOrderValue: eventData?.maxOrderValue || null,
@@ -95,7 +99,7 @@ const LoyaltyEventForm = ({
         tierId: eventData?.tierId || "",
         type: eventData?.type || "",
       }}
-      validationSchema={validationSchema}
+      validationSchema={getValidationSchema()}
       onSubmit={(values, { setSubmitting, resetForm }) => {
         submitEventData(values).then(() => {
           setSubmitting(false);
@@ -114,7 +118,7 @@ const LoyaltyEventForm = ({
       }) => (
         <FormikForm>
           <Page
-            title={isUpdate ? "Update Event" : event}
+            title={isUpdate ? "Update Event" : eventType}
             fullWidth
             primaryAction={{
               content: isUpdate ? "Save Event" : "Create Event",
@@ -152,65 +156,69 @@ const LoyaltyEventForm = ({
                     onBlur={handleBlur}
                     error={touched.expiryDate && errors.expiryDate}
                   />
-                  <TextField
-                    label="Minimum Order Value"
-                    type="number"
-                    name="minOrderValue"
-                    value={values.minOrderValue}
-                    onChange={(value) => {
-                      console.log("value", value);
-                      handleChange({
-                        target: { name: "minOrderValue", value: value },
-                      });
-                    }}
-                    onBlur={handleBlur}
-                    error={touched.minOrderValue && errors.minOrderValue}
-                  />
-                  <TextField
-                    label="Maximum Order Value"
-                    type="number"
-                    name="maxOrderValue"
-                    value={values.maxOrderValue}
-                    onChange={(value) => {
-                      console.log("value", value);
-                      handleChange({
-                        target: { name: "maxOrderValue", value: value },
-                      });
-                    }}
-                    onBlur={handleBlur}
-                    error={touched.maxOrderValue && errors.maxOrderValue}
-                  />
-                  <Select
-                    label="Spending Type"
-                    name="spendingType"
-                    options={[
-                      { label: "Fixed", value: "FIXED" },
-                      { label: "Percentage", value: "PERCENTAGE" },
-                    ]}
-                    value={values.spendingType}
-                    onChange={(value) =>
-                      handleChange({
-                        target: { name: "spendingType", value: value },
-                      })
-                    }
-                    error={touched.spendingType && errors.spendingType}
-                  />
-                  <TextField
-                    label="Spending Limit"
-                    type="number"
-                    name="spendingLimit"
-                    value={values.spendingLimit}
-                    onChange={(value) =>
-                      handleChange({
-                        target: {
-                          name: "spendingLimit",
-                          value: value,
-                        },
-                      })
-                    }
-                    onBlur={handleBlur}
-                    error={touched.spendingLimit && errors.spendingLimit}
-                  />
+                  {eventType !== "SIGN_UP" && (
+                    <>
+                      <TextField
+                        label="Minimum Order Value"
+                        type="number"
+                        name="minOrderValue"
+                        value={values.minOrderValue}
+                        onChange={(value) => {
+                          console.log("value", value);
+                          handleChange({
+                            target: { name: "minOrderValue", value: value },
+                          });
+                        }}
+                        onBlur={handleBlur}
+                        error={touched.minOrderValue && errors.minOrderValue}
+                      />
+                      <TextField
+                        label="Maximum Order Value"
+                        type="number"
+                        name="maxOrderValue"
+                        value={values.maxOrderValue}
+                        onChange={(value) => {
+                          console.log("value", value);
+                          handleChange({
+                            target: { name: "maxOrderValue", value: value },
+                          });
+                        }}
+                        onBlur={handleBlur}
+                        error={touched.maxOrderValue && errors.maxOrderValue}
+                      />
+                      <Select
+                        label="Spending Type"
+                        name="spendingType"
+                        options={[
+                          { label: "Fixed", value: "FIXED" },
+                          { label: "Percentage", value: "PERCENTAGE" },
+                        ]}
+                        value={values.spendingType}
+                        onChange={(value) =>
+                          handleChange({
+                            target: { name: "spendingType", value: value },
+                          })
+                        }
+                        error={touched.spendingType && errors.spendingType}
+                      />
+                      <TextField
+                        label="Spending Limit"
+                        type="number"
+                        name="spendingLimit"
+                        value={values.spendingLimit}
+                        onChange={(value) =>
+                          handleChange({
+                            target: {
+                              name: "spendingLimit",
+                              value: value,
+                            },
+                          })
+                        }
+                        onBlur={handleBlur}
+                        error={touched.spendingLimit && errors.spendingLimit}
+                      />
+                    </>
+                  )}
                   <Select
                     label="Tier"
                     name="tierId"

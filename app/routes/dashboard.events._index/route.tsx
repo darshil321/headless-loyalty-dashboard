@@ -25,7 +25,6 @@ export default function EventIndex() {
   const [active, setActive] = useState(false);
   const [currentEventId, setCurrentEventId] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const loading = useAppSelector((state) => state.event.loading);
 
   const events = useAppSelector((state) => state.event.loyaltyEvents);
 
@@ -92,7 +91,7 @@ export default function EventIndex() {
         },
       }}
     >
-      {events?.length === 0 && !loading ? (
+      {events?.length === 0 ? (
         <main className="flex flex-col flex-1 gap-4 p-4 md:gap-8 md:p-10">
           <Card className="p-4">
             <BlockStack gap={"400"}>

@@ -154,14 +154,7 @@ export default function CustomerDetails() {
               </BlockStack>
             </BlockStack>
           </Card>
-          <Card>
-            <BlockStack gap={"200"} align="space-between">
-              <Text as="h3" variant="bodyMd">
-                Total Points: {selectedCustomer.totalPoints}
-              </Text>
-              <Button onClick={handleAdjustPoints}>Adjust Points</Button>
-            </BlockStack>
-          </Card>
+
           <Card>
             <Accordion collapsible type="single">
               {transactionItems}
@@ -174,6 +167,12 @@ export default function CustomerDetails() {
               <Text as="h2" variant="headingMd">
                 Balance
               </Text>
+              <Text as="h2" variant="bodyMd">
+                Balance data
+              </Text>
+              <Text as="h2" variant="bodyMd">
+                Balance data
+              </Text>
               <BlockStack align="space-between">
                 <Text as="h1" variant="headingMd">
                   Points: {selectedCustomer.totalPoints}
@@ -182,9 +181,8 @@ export default function CustomerDetails() {
               <Button onClick={() => console.log("Redeem Points")}>
                 Redeem Points
               </Button>
-              <Button onClick={() => console.log("Create Event")}>
-                Create Event
-              </Button>
+
+              <Button onClick={handleAdjustPoints}>Adjust Points</Button>
             </BlockStack>
           </Card>
         </Layout.Section>
