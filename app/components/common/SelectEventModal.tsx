@@ -50,7 +50,7 @@ const SelectEventModal = ({
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Select an Option</DialogTitle>
+          <DialogTitle>Select an Event</DialogTitle>
           <DialogDescription>
             Choose an option from the list below.
           </DialogDescription>
@@ -107,7 +107,7 @@ const SelectEventModal = ({
                 className="w-full uppercase"
                 disabled={!isValid || loading}
               >
-                {loading ? "Submitting..." : "Submit"}
+                {loading ? "Going to event" : "Go to Event"}
               </Button>
             </Form>
           )}

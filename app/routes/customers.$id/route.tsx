@@ -113,117 +113,113 @@ export default function CustomerDetails() {
     <Page>
       <Layout>
         <Layout.Section>
-          <BlockStack gap={"600"} align="space-between">
-            <Card>
-              <BlockStack gap={"600"} align="space-between">
-                <BlockStack gap={"300"} align="space-between">
-                  <Text as="h2" variant="headingLg">
-                    Customer overview
-                  </Text>
-                </BlockStack>
-                <BlockStack gap={"200"} align="space-between">
-                  <Text as="p" variant="bodyMd">
-                    Email: {selectedCustomer.email}
-                  </Text>
-                  <Text as="p" variant="bodyMd">
-                    Name: {selectedCustomer.name}
-                  </Text>
-                  <Text as="p" variant="bodyMd">
-                    Phone Number: {selectedCustomer.phoneNumber}
-                  </Text>
-                  <Text as="p" variant="bodyMd">
-                    Birthday: {selectedCustomer.birthday}
-                  </Text>
-                  <Text as="p" variant="bodyMd">
-                    Type: {selectedCustomer.type}
-                  </Text>
-                  <Text as="p" variant="bodyMd">
-                    Customer Since: {selectedCustomer.customerSince}
-                  </Text>
-                </BlockStack>
+          <Card>
+            <BlockStack gap={"600"} align="space-between">
+              <BlockStack gap={"300"} align="space-between">
+                <Text as="h2" variant="headingLg">
+                  Customer overview
+                </Text>
               </BlockStack>
-            </Card>
+              <BlockStack gap={"200"} align="space-between">
+                <Text as="p" variant="bodyMd">
+                  Email: {selectedCustomer.email}
+                </Text>
+                <Text as="p" variant="bodyMd">
+                  Name: {selectedCustomer.name}
+                </Text>
+                <Text as="p" variant="bodyMd">
+                  Phone Number: {selectedCustomer.phoneNumber}
+                </Text>
+                <Text as="p" variant="bodyMd">
+                  Birthday: {selectedCustomer.birthday}
+                </Text>
+                <Text as="p" variant="bodyMd">
+                  Type: {selectedCustomer.type}
+                </Text>
+                <Text as="p" variant="bodyMd">
+                  Customer Since: {selectedCustomer.customerSince}
+                </Text>
+              </BlockStack>
+            </BlockStack>
+          </Card>
 
-            <Card>
-              <BlockStack gap={"400"} align="space-between">
-                <BlockStack gap={"300"} align="space-between">
-                  <Text as="h2" variant="headingLg">
-                    Transaction
-                  </Text>
-                </BlockStack>
-                <Accordion type="single" collapsible>
-                  {userTransactions.map((transaction: any, index: number) => (
-                    <AccordionItem key={index} value={transaction.pointsUsed}>
-                      <AccordionTrigger className="cursor-pointer no-underline ">
-                        <Text as="h4" variant="headingMd">
-                          {transaction?.id}
-                          <span className="ml-2">
-                            <Badge
-                              tone={
-                                transaction?.type === "DEBIT"
-                                  ? "critical"
-                                  : "success"
-                              }
-                            >
-                              {`${transaction.type === "DEBIT" ? "-" : "+"}${
-                                transaction?.pointsUsed
-                              } `}
-                            </Badge>
-                          </span>
-                        </Text>
-                      </AccordionTrigger>
-                      <AccordionContent>
-                        <BlockStack align="space-between" gap={"200"}>
-                          <InlineGrid columns="1fr auto">
-                            <Text as="p" variant="bodyMd">
-                              <b>Expires at</b>
-                            </Text>
-                            <Text as="p" variant="bodyMd">
-                              {transaction?.expiresAt}
-                            </Text>
-                          </InlineGrid>
-                          <InlineGrid columns="1fr auto">
-                            <Text as="p" variant="bodyMd">
-                              <b>Type</b>
-                            </Text>
-                            <Text as="p" variant="bodyMd">
-                              {transaction?.type}
-                            </Text>
-                          </InlineGrid>
-                          <InlineGrid columns="1fr auto">
-                            <Text as="p" variant="bodyMd">
-                              <b>description</b>
-                            </Text>
-                            <Text as="p" variant="bodyMd">
-                              {transaction?.description}
-                            </Text>
-                          </InlineGrid>
-                          <InlineGrid columns="1fr auto">
-                            <Text as="p" variant="bodyMd">
-                              <p>status</p>
-                            </Text>
-                            <Text as="p" variant="bodyMd">
-                              <Badge tone="success">
-                                {transaction?.status}
-                              </Badge>
-                            </Text>
-                          </InlineGrid>
-                          <InlineGrid columns="1fr auto">
-                            <Text as="p" variant="bodyMd">
-                              <b>pointsUsed</b>
-                            </Text>
-                            <Text as="p" variant="bodyMd">
-                              {transaction?.pointsUsed}
-                            </Text>
-                          </InlineGrid>
-                        </BlockStack>
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
+          <Card>
+            <BlockStack gap={"400"} align="space-between">
+              <BlockStack gap={"300"} align="space-between">
+                <Text as="h2" variant="headingLg">
+                  Transaction
+                </Text>
               </BlockStack>
-            </Card>
-          </BlockStack>
+              <Accordion type="single" collapsible>
+                {userTransactions.map((transaction: any, index: number) => (
+                  <AccordionItem key={index} value={transaction.pointsUsed}>
+                    <AccordionTrigger className="cursor-pointer no-underline ">
+                      <Text as="h4" variant="headingMd">
+                        {transaction.id}
+                        <span className="ml-2">
+                          <Badge
+                            tone={
+                              transaction.type === "DEBIT"
+                                ? "critical"
+                                : "success"
+                            }
+                          >
+                            {`${transaction.type === "DEBIT" ? "-" : "+"}${
+                              transaction.pointsUsed
+                            } `}
+                          </Badge>
+                        </span>
+                      </Text>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <BlockStack align="space-between" gap={"200"}>
+                        <InlineGrid columns="1fr auto">
+                          <Text as="p" variant="bodyMd">
+                            <b>Expires at</b>
+                          </Text>
+                          <Text as="p" variant="bodyMd">
+                            {transaction?.expiresAt}
+                          </Text>
+                        </InlineGrid>
+                        <InlineGrid columns="1fr auto">
+                          <Text as="p" variant="bodyMd">
+                            <b>Type</b>
+                          </Text>
+                          <Text as="p" variant="bodyMd">
+                            {transaction?.type}
+                          </Text>
+                        </InlineGrid>
+                        <InlineGrid columns="1fr auto">
+                          <Text as="p" variant="bodyMd">
+                            <b>description</b>
+                          </Text>
+                          <Text as="p" variant="bodyMd">
+                            {transaction?.description}
+                          </Text>
+                        </InlineGrid>
+                        <InlineGrid columns="1fr auto">
+                          <Text as="p" variant="bodyMd">
+                            <p>status</p>
+                          </Text>
+                          <Text as="p" variant="bodyMd">
+                            <Badge tone="success">{transaction?.status}</Badge>
+                          </Text>
+                        </InlineGrid>
+                        <InlineGrid columns="1fr auto">
+                          <Text as="p" variant="bodyMd">
+                            <b>pointsUsed</b>
+                          </Text>
+                          <Text as="p" variant="bodyMd">
+                            {transaction?.pointsUsed}
+                          </Text>
+                        </InlineGrid>
+                      </BlockStack>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </BlockStack>
+          </Card>
         </Layout.Section>
         <Layout.Section variant="oneThird">
           <Card>

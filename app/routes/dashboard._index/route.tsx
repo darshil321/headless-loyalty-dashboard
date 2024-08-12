@@ -1,11 +1,8 @@
 import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { getAllLoyaltyEvents } from "@/store/event/eventSlice";
-import { Card } from "@/components/ui/card";
-import SelectEventModal from "@/components/common/SelectEventModal";
-import { Button } from "@/components/ui/button";
 import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
-import { BlockStack, Layout, Text } from "@shopify/polaris";
+import { Layout } from "@shopify/polaris";
 
 export default function Dashboard() {
   const dispatch = useAppDispatch();

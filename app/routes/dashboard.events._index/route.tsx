@@ -34,30 +34,30 @@ export default function EventIndex() {
   };
 
   const handleEdit = (id: string) => {
-    navigate(`/tiers/${id}`);
+    navigate(`/dashboard/event/${id}`);
   };
 
   const handleClose = () => {
-    setActive(false); // Close the modal
+    setActive(false);
   };
 
   const handleConfirmDelete = async () => {
     console.log("Deleting tier with ID:", currentEventId);
-    // Call the deletion API or dispatch a Redux action
-    // Assume async operation:
     try {
       await dispatch(deleteLoyaltyEvent(currentEventId));
       console.log("event deleted successfully");
     } catch (error) {
       console.error("Failed to delete event:", error);
     }
-    handleClose(); // Close the modal after action
+    handleClose();
   };
 
   const rows = events?.map((event: any, index) => [
-    event.name,
-    event.default === true ? "Default" : "Custom",
-    event.status,
+    event.event,
+    event.type,
+    event.tier.name,
+    event.points,
+    new Date(event.expiryDate).toLocaleDateString(),
     <div className="flex space-x-2" key={index}>
       <Button onClick={() => handleEdit(event.id)} icon={EditIcon} external />
       <Button
@@ -92,12 +92,12 @@ export default function EventIndex() {
       }}
     >
       {events?.length === 0 ? (
-        <main className="flex flex-col flex-1 gap-4 p-4 md:gap-8 md:p-10">
+        <main>
           <Card className="p-4">
             <BlockStack gap={"400"}>
               <BlockStack gap={"300"}>
                 <Text variant="headingMd" as="h2">
-                  Define Rules
+                  Define Events
                 </Text>
               </BlockStack>
               <div className="text-start mb-2">
@@ -119,8 +119,15 @@ export default function EventIndex() {
           <Layout.Section>
             <Card>
               <DataTable
-                columnContentTypes={["text", "text", "text", "text"]}
-                headings={["Name", "Type", "Status", "Actions"]}
+                columnContentTypes={["text", "text", "text", "text", "text"]}
+                headings={[
+                  "Name",
+                  "Type",
+                  "Tier",
+                  "Points",
+                  "Expiry",
+                  "Actions",
+                ]}
                 rows={rows}
                 showTotalsInFooter={true}
                 sortable={[false, false, true, false]}

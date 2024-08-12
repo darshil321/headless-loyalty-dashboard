@@ -33,8 +33,8 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
-        <Link to="/dashboard/events">Dashboard</Link>
         <Link to="/tiers">Tiers</Link>
+        <Link to="/dashboard/events">Events</Link>
         <Link to="/customers">Customers</Link>
         <Link to="/settings">Settings</Link>
       </NavMenu>

@@ -9,13 +9,15 @@ import { useNavigate, useParams } from "@remix-run/react";
 import { useEffect } from "react";
 
 export default function EditEvent() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { eventId } = useParams();
+  console.log("eventId", eventId);
+  // const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const selectedTierEvent = useAppSelector(
+  const LoyaltyEvent = useAppSelector(
     (state) => state.event.selectedLoyaltyEvent,
   );
+  console.log("LoyaltyEvent", LoyaltyEvent);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -24,20 +26,24 @@ export default function EditEvent() {
       );
       const { host } = storedConfig;
       setupAxiosInterceptors(host);
-      dispatch(getLoyaltyEventById(id)).catch((error: any) => {
-        console.log("Error fetching event data:", error);
-        navigate("/error");
-      });
+      dispatch(getLoyaltyEventById(eventId))
+        .then((res) => {
+          // parth data is not proper
+          console.log("LoyaltyEventinDispatch", res);
+        })
+        .catch((error: any) => {
+          console.log("Error fetching event data:", error);
+        });
     }
 
     return () => {
       dispatch(clearSelectedLoyaltyEvent());
     };
-  }, [id]);
+  }, [eventId, dispatch]);
 
-  if (!selectedTierEvent) {
-    return <div>Loading...</div>;
+  if (!LoyaltyEvent) {
+    return <div>Loadifffng...</div>;
   }
 
-  return <LotaltyEventForm eventData={selectedTierEvent} isUpdate />;
+  return <LotaltyEventForm eventData={LoyaltyEvent} isUpdate />;
 }
