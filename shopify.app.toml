@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://jamie-concerning-medicare-factor.trycloudflare.com"
+application_url = "https://verification-grenada-priest-mutual.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_discounts,read_orders,read_price_rules,read_products,write_discou
 
 [auth]
 redirect_urls = [
-  "https://jamie-concerning-medicare-factor.trycloudflare.com/auth/callback",
-  "https://jamie-concerning-medicare-factor.trycloudflare.com/auth/shopify/callback",
-  "https://jamie-concerning-medicare-factor.trycloudflare.com/api/auth/callback"
+  "https://verification-grenada-priest-mutual.trycloudflare.com/auth/callback",
+  "https://verification-grenada-priest-mutual.trycloudflare.com/auth/shopify/callback",
+  "https://verification-grenada-priest-mutual.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

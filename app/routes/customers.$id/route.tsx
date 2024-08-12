@@ -85,7 +85,7 @@ export default function CustomerDetails() {
     return <h1>Loading...</h1>;
   }
 
-  const transactionItems = userTransactions.map((transaction: any) => (
+  const transactionItems = userTransactions?.map((transaction: any) => (
     <AccordionItem key={transaction.id} value={transaction.id}>
       <AccordionTrigger>
         {`${transaction.type === "DEBIT" ? "-" : "+"}${transaction.points} Points - Expires At ${new Date(transaction.expiresAt).toLocaleDateString()}`}

@@ -6,10 +6,15 @@ import { useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
 import { useAppDispatch } from "@/store/hooks";
 import { setSessionToken } from "@/store/session/sessionSlice";
+import axios from "axios";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  const { session } = await authenticate.admin(request);
 
+  await axios.post(process.env.BACKEND_URL + "/shopify/app-integration" || "", {
+    accessToken: session.accessToken,
+    store: session.shop,
+  });
   return null;
 };
 
