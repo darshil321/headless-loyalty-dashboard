@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://tablets-powers-hills-jacksonville.trycloudflare.com"
+application_url = "https://sc-bulk-mug-jul.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_discounts,read_orders,read_price_rules,read_products,write_discou
 
 [auth]
 redirect_urls = [
-  "https://tablets-powers-hills-jacksonville.trycloudflare.com/auth/callback",
-  "https://tablets-powers-hills-jacksonville.trycloudflare.com/auth/shopify/callback",
-  "https://tablets-powers-hills-jacksonville.trycloudflare.com/api/auth/callback"
+  "https://sc-bulk-mug-jul.trycloudflare.com/auth/callback",
+  "https://sc-bulk-mug-jul.trycloudflare.com/auth/shopify/callback",
+  "https://sc-bulk-mug-jul.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
