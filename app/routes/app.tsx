@@ -15,13 +15,10 @@ export const links = () => [{ rel: "stylesheet", href: polarisStyles }];
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
 
-  await axios.post(
-    process.env.BACKEND_URL + "/v1/shopify/app-integration" || "",
-    {
-      accessToken: session.accessToken,
-      store: session.shop,
-    },
-  );
+  await axios.post(process.env.BACKEND_URL + "/shopify/app-integration" || "", {
+    accessToken: session.accessToken,
+    store: session.shop,
+  });
 
   return json({ apiKey: process.env.SHOPIFY_API_KEY || "" });
 };

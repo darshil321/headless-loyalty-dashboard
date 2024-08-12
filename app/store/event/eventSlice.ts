@@ -1,5 +1,7 @@
+import { createEventAPI } from "@/api/events/create-event";
+import { listTiersAPI } from "@/api/tiers/list-tiers";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export enum StepEnum {
   INITIAL = "initial",
@@ -19,12 +21,86 @@ export const eventTypeOptions = [
 export interface EventState {
   selectedEvent: string | null;
   eventStage: StepEnum;
+  loading: boolean;
+  error: string | null;
+  loyaltyEvents: any[];
+  selectedLoyaltyEvent: any | null;
 }
 
 const initialState: EventState = {
   selectedEvent: null,
   eventStage: StepEnum.INITIAL,
+  loading: false,
+  error: null,
+  loyaltyEvents: [], // Assuming this stores the list of loyalty configurations
+  selectedLoyaltyEvent: null,
 };
+
+// Define async thunk for creating loyalty configuration
+export const createLoyaltyEvent: any = createAsyncThunk(
+  "loyaltyEvent/create",
+  async (loyaltyData: any, thunkAPI) => {
+    try {
+      const response = await createEventAPI(loyaltyData);
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  },
+);
+
+// Define async thunk for updating loyalty configuration
+export const updateLoyaltyEvent: any = createAsyncThunk(
+  "loyaltyEvent/update",
+  async (loyaltyData: any, thunkAPI) => {
+    try {
+      const response = await updateTierAPI(loyaltyData.id, loyaltyData);
+      return response.data;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const deleteLoyaltyEvent: any = createAsyncThunk(
+  "loyaltyEvent/delete",
+  async (loyaltyId: any, thunkAPI) => {
+    try {
+      await deleteTierAPI(loyaltyId);
+      return loyaltyId; // Return the deleted loyaltyId
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  },
+);
+
+// Define async thunk for fetching a single loyalty configuration by ID
+export const getLoyaltyEventById: any = createAsyncThunk(
+  "loyaltyEvent/getById",
+  async (loyaltyId: string, thunkAPI) => {
+    try {
+      const response: any = getTierAPI(loyaltyId);
+      return response;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  },
+);
+
+// Define async thunk for fetching all loyalty configurations
+export const getAllLoyaltyEvents: any = createAsyncThunk(
+  "loyaltyEvent/getAll",
+  async (_, thunkAPI) => {
+    try {
+      console.log("token");
+      const response = await listTiersAPI();
+      console.log("response", response);
+      return response;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  },
+);
 
 export const eventSlice = createSlice({
   name: "event",
@@ -36,6 +112,75 @@ export const eventSlice = createSlice({
     setEventStage: (state, action: PayloadAction<StepEnum>) => {
       state.eventStage = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    // Handle createLoyaltyEvent pending and fulfilled actions
+    builder.addCase(createLoyaltyEvent.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(createLoyaltyEvent.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(createLoyaltyEvent.rejected, (state: any, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+
+    // Handle updateLoyaltyEvent pending and fulfilled actions
+    builder.addCase(updateLoyaltyEvent.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(updateLoyaltyEvent.fulfilled, (state: any) => {
+      state.loading = false;
+    });
+    builder.addCase(updateLoyaltyEvent.rejected, (state: any, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+
+    // Handle deleteLoyaltyEvent pending and fulfilled actions
+    builder.addCase(deleteLoyaltyEvent.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(deleteLoyaltyEvent.fulfilled, (state, action) => {
+      state.loading = false;
+      // Assuming payload is the deleted loyaltyId
+      state.loyaltyEvents = state.loyaltyEvents.filter(
+        (loyalty: any) => loyalty.id !== action.payload,
+      );
+    });
+    builder.addCase(deleteLoyaltyEvent.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+
+    // Handle getLoyaltyEventById pending and fulfilled actions
+    builder.addCase(getLoyaltyEventById.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(getLoyaltyEventById.fulfilled, (state, action) => {
+      state.loading = false;
+      // Assuming payload is the fetched loyalty tier object
+      state.selectedLoyaltyEvent = action.payload;
+    });
+    builder.addCase(getLoyaltyEventById.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+
+    // Handle getAllLoyaltyEvents pending and fulfilled actions
+    builder.addCase(getAllLoyaltyEvents.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(getAllLoyaltyEvents.fulfilled, (state, action) => {
+      state.loading = false;
+      // Assuming payload is an array of loyalty tier objects
+      state.loyaltyEvents = action.payload;
+    });
+    builder.addCase(getAllLoyaltyEvents.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
   },
 });
 

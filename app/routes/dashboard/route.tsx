@@ -12,6 +12,7 @@ import { listEventsAPI } from "@/api/events/list-events";
 import SelectEventModal from "@/components/common/SelectEventModal";
 import { StepEnum } from "@/store/event/eventSlice";
 import { useSelector } from "react-redux";
+import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
 
 type EventDetails = {
   backendValue: string;
@@ -52,6 +53,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("events");
   const eventStage = useSelector((state: any) => state.event.eventStage);
+
+  useEffect(() => {
+    // Ensure sessionStorage is accessed only client-side
+    if (typeof window !== "undefined") {
+      const storedConfig = JSON.parse(
+        sessionStorage.getItem("app-bridge-config") || "{}",
+      );
+      const { host } = storedConfig;
+      setupAxiosInterceptors(host);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
