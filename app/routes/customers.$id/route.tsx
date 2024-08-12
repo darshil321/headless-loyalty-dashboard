@@ -1,41 +1,75 @@
-import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
+  Page,
+  Layout,
+  Card,
+  Text,
+  Button,
+  Badge,
+  BlockStack,
+} from "@shopify/polaris";
+import { useNavigate, useParams } from "@remix-run/react";
+
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useAppSelector } from "@/store/hooks";
+import {
+  clearLoyaltyCustomer,
+  getLoyaltyUserById,
+} from "@/store/user/userSlice";
+import { getLoyaltyTransactionByUserId } from "@/store/transaction/transactionSlice";
+import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
+import {
+  AlertDialog,
   AlertDialogAction,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
 } from "@/components/ui/alert-dialog";
+import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
-import { useAppSelector } from "@/store/hooks";
-import { getLoyaltyTransactionByUserId } from "@/store/transaction/transactionSlice";
-import {
-  clearLoyaltyCustomer,
-  getLoyaltyUserById,
-} from "@/store/user/userSlice";
-import { AlertDialog } from "@radix-ui/react-alert-dialog";
-import { useNavigate, useParams } from "@remix-run/react";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default function CustomerDetails() {
   const { id } = useParams();
-  console.log("id", id);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const selectedCustomer = useAppSelector(
     (state: any) => state.user.selectedLoyaltyUser,
   );
-  const userTransactions = useAppSelector(
-    (state: any) => state.transaction.loyaltyTransaction,
-  );
+  // const userTransactions = useAppSelector(
+  //   (state: any) => state.transaction.loyaltyTransaction,
+  // );
+
   const [showDialog, setShowDialog] = useState(false);
+
+  let userTransactions = [
+    {
+      expiresAt: "2024-08-12 23:59:59",
+      description: "Purchase of groceries",
+      status: "Completed",
+      pointsUsed: 100,
+      type: "Debit",
+    },
+    {
+      expiresAt: "2024-08-15 14:30:00",
+      description: "Payment for online services",
+      status: "Pending",
+      pointsUsed: 50,
+      type: "Credit",
+    },
+    {
+      expiresAt: "2024-08-18 10:00:00",
+      description: "Shopping spree",
+      status: "Completed",
+      pointsUsed: 200,
+      type: "Debit",
+    },
+  ];
 
   const handleAdjustPoints = () => {
     setShowDialog(true);
@@ -51,115 +85,110 @@ export default function CustomerDetails() {
       const storedConfig = JSON.parse(
         sessionStorage.getItem("app-bridge-config") || "{}",
       );
-
       const { host } = storedConfig;
-
       setupAxiosInterceptors(host);
 
-      dispatch(clearLoyaltyCustomer()); // Clear previous tier data right before fetching new
+      dispatch(clearLoyaltyCustomer());
       dispatch(getLoyaltyUserById(id)).catch((error: any) => {
         console.error("Error fetching user data:", error);
-        navigate("/error"); // navigate to an error page or handle the error appropriately
+        navigate("/error");
       });
-      // get loyalty transactions by id
       dispatch(getLoyaltyTransactionByUserId(id));
     }
 
-    // Cleanup function to reset the tier data when component unmounts
     return () => {
       dispatch(clearLoyaltyCustomer());
     };
   }, [id, dispatch, navigate]);
 
-  console.log("selectedCustomer", selectedCustomer);
-  console.log("userTransactions", userTransactions);
-
   if (!selectedCustomer) {
     return <h1>Loading...</h1>;
   }
 
+  const transactionItems = userTransactions.map((transaction: any) => (
+    <AccordionItem key={transaction.id} value={transaction.id}>
+      <AccordionTrigger>
+        {`${transaction.type === "DEBIT" ? "-" : "+"}${transaction.points} Points - ${new Date(transaction.createdAt).toLocaleDateString()}`}
+      </AccordionTrigger>
+      <AccordionContent>
+        <BlockStack align="space-between">
+          <Text as="p" variant="bodyMd">
+            {transaction.description}
+          </Text>
+          <Badge>{transaction.type}</Badge>
+        </BlockStack>
+      </AccordionContent>
+    </AccordionItem>
+  ));
+
   return (
-    <div className="p-8">
-      <div className="grid grid-cols-2 gap-8">
-        <Card>
-          <CardHeader>Overview</CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span>Email</span>
-                <span>abc@gmail.com</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Name</span>
-                <span>abc</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Phone Number</span>
-                <span>+91 8281918191</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Birthday</span>
-                <span>DD/MM/YYYY</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Type</span>
-                <span>Guest</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Customer Since</span>
-                <span>XX months ago</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>Balance</CardHeader>
-          <CardContent className="text-4xl font-bold">10 Points</CardContent>
-          <CardFooter className="flex justify-between">
-            <span>Total points earned: 100</span>
-            <span>Total points redeemed: 90</span>
-          </CardFooter>
-          <div className="flex justify-end space-x-2">
-            <button className="btn btn-primary" onClick={handleAdjustPoints}>
-              Adjust Points
-            </button>
-            <button className="btn btn-secondary">Redeem</button>
-          </div>
-        </Card>
-      </div>
-
-      <div className="mt-8 space-y-4">
-        <Card>
-          <CardHeader>Transactions</CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <div>
-                  <span className="text-red-500">-200</span>
-                  <span className="ml-2">DD/MM/YYYY</span>
-                </div>
-                <span>Lorem Ipsum</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <div>
-                  <span className="text-green-500">+20</span>
-                  <span className="ml-2">DD/MM/YYYY</span>
-                </div>
-                <span>Lorem Ipsum</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <div>
-                  <span className="text-green-500">+200</span>
-                  <span className="ml-2">DD/MM/YYYY</span>
-                </div>
-                <span>Lorem Ipsum</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
+    <Page>
+      <Layout>
+        <Layout.Section>
+          <Card>
+            <BlockStack gap={"500"} align="space-between">
+              <BlockStack gap={"300"} align="space-between">
+                <Text as="h2" variant="headingMd">
+                  Customer overview
+                </Text>
+              </BlockStack>
+              <BlockStack gap={"200"} align="space-between">
+                <Text as="p" variant="bodyMd">
+                  Email: {selectedCustomer.email}
+                </Text>
+                <Text as="p" variant="bodyMd">
+                  Name: {selectedCustomer.name}
+                </Text>
+                <Text as="p" variant="bodyMd">
+                  Phone Number: {selectedCustomer.phoneNumber}
+                </Text>
+                <Text as="p" variant="bodyMd">
+                  Birthday: {selectedCustomer.birthday}
+                </Text>
+                <Text as="p" variant="bodyMd">
+                  Type: {selectedCustomer.type}
+                </Text>
+                <Text as="p" variant="bodyMd">
+                  Customer Since: {selectedCustomer.customerSince}
+                </Text>
+              </BlockStack>
+            </BlockStack>
+          </Card>
+          <Card>
+            <BlockStack gap={"200"} align="space-between">
+              <Text as="h3" variant="bodyMd">
+                Total Points: {selectedCustomer.totalPoints}
+              </Text>
+              <Button onClick={handleAdjustPoints}>Adjust Points</Button>
+            </BlockStack>
+          </Card>
+          <Card>
+            <Accordion collapsible type="single">
+              {transactionItems}
+            </Accordion>
+          </Card>
+        </Layout.Section>
+        <Layout.Section variant="oneThird">
+          <Card>
+            <BlockStack gap={"200"} align="space-between">
+              <Text as="h2" variant="headingMd">
+                Balance
+              </Text>
+              <BlockStack align="space-between">
+                <Text as="h1" variant="headingMd">
+                  Points: {selectedCustomer.totalPoints}
+                </Text>
+              </BlockStack>
+              <Button onClick={() => console.log("Redeem Points")}>
+                Redeem Points
+              </Button>
+              <Button onClick={() => console.log("Create Event")}>
+                Create Event
+              </Button>
+            </BlockStack>
+          </Card>
+        </Layout.Section>
+      </Layout>
       {showDialog && (
         <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
           <AlertDialogContent>
@@ -182,6 +211,6 @@ export default function CustomerDetails() {
           </AlertDialogContent>
         </AlertDialog>
       )}
-    </div>
+    </Page>
   );
 }

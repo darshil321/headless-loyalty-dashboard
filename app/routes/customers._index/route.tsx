@@ -8,9 +8,9 @@ import {
   IndexTable,
   Text,
   useIndexResourceState,
-  useBreakpoints,
   Page,
   Layout,
+  useBreakpoints,
 } from "@shopify/polaris";
 import { useEffect } from "react";
 import { ViewIcon } from "@shopify/polaris-icons";
@@ -20,6 +20,7 @@ export default function CustomersTable() {
   const dispatch = useAppDispatch();
 
   const users = useAppSelector((state) => state.user.loyaltyUsers);
+  const loading = useAppSelector((state) => state.user.loading);
 
   const handleDetail = (id: string) => {
     navigate(`/customers/${id}`);
@@ -73,17 +74,10 @@ export default function CustomersTable() {
       <Layout>
         <Layout.Section>
           <LegacyCard>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Customers</h2>
-            </div>
-            {(!users || !rowMarkup) && <div>Loading...</div>}
-            {users && rowMarkup && users.length === 0 && (
-              <div>No customers found</div>
-            )}
             {users && rowMarkup && (
               <IndexTable
-                condensed={useBreakpoints().smDown}
                 resourceName={resourceName}
+                condensed={useBreakpoints().smDown}
                 itemCount={users.length}
                 selectedItemsCount={
                   allResourcesSelected ? "All" : selectedResources.length
@@ -95,6 +89,7 @@ export default function CustomersTable() {
                   { title: "Tier" },
                   { title: "Actions" },
                 ]}
+                loading={loading}
               >
                 {rowMarkup}
               </IndexTable>
