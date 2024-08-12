@@ -34,7 +34,7 @@ export default function CustomersTable() {
   const { selectedResources, allResourcesSelected, handleSelectionChange } =
     useIndexResourceState(users || []);
 
-  const rowMarkup = users?.map((user, index) => (
+  const rowMarkup = users?.map((user: any, index) => (
     <IndexTable.Row
       id={user.id}
       key={user.id}
@@ -74,26 +74,24 @@ export default function CustomersTable() {
       <Layout>
         <Layout.Section>
           <LegacyCard>
-            {users && rowMarkup && (
-              <IndexTable
-                resourceName={resourceName}
-                condensed={useBreakpoints().smDown}
-                itemCount={users.length}
-                selectedItemsCount={
-                  allResourcesSelected ? "All" : selectedResources.length
-                }
-                onSelectionChange={handleSelectionChange}
-                headings={[
-                  { title: "User Id" },
-                  { title: "Points" },
-                  { title: "Tier" },
-                  { title: "Actions" },
-                ]}
-                loading={loading}
-              >
-                {rowMarkup}
-              </IndexTable>
-            )}
+            <IndexTable
+              condensed={useBreakpoints().smDown}
+              resourceName={resourceName}
+              itemCount={users.length}
+              selectedItemsCount={
+                allResourcesSelected ? "All" : selectedResources.length
+              }
+              onSelectionChange={handleSelectionChange}
+              headings={[
+                { title: "User Id" },
+                { title: "Points" },
+                { title: "Tier" },
+                { title: "Actions" },
+              ]}
+              loading={loading}
+            >
+              {rowMarkup}
+            </IndexTable>
           </LegacyCard>
         </Layout.Section>
       </Layout>

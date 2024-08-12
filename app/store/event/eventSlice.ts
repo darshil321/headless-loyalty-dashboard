@@ -12,17 +12,18 @@ export enum StepEnum {
   LIST_TABLE_STAGE = "TableView",
 }
 export enum eventTypeOptionsEnum {
-  ORDER_CREATE = "order create",
-  SIGN_UP = "sign up",
+  ORDER_CREATE = "ORDER_CREATE",
+  SIGN_UP = "SIGN_UP",
 }
 
 export const eventTypeOptions = [
+  { label: "Select an option", value: "" },
   { label: "Order Create", value: eventTypeOptionsEnum.ORDER_CREATE },
   { label: "Sign UP", value: eventTypeOptionsEnum.SIGN_UP },
 ];
 
 export interface EventState {
-  selectedEvent: string | null;
+  selectedEvent: any | null;
   eventStage: StepEnum;
   loading: boolean;
   error: string | null;

@@ -6,38 +6,48 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "../ui/use-toast";
 import { useDispatch } from "react-redux";
-import {
-  eventTypeOptions,
-  setEventStage,
-  setSelectedEvent,
-  StepEnum,
-} from "@/store/event/eventSlice";
+import { eventTypeOptions, setSelectedEvent } from "@/store/event/eventSlice";
+import { useNavigate } from "@remix-run/react";
+
+type EventDetails = {
+  backendValue: string;
+  frontendValue: string;
+};
+
+export const EventEnum: Record<string, EventDetails> = {
+  SIGN_UP: {
+    backendValue: "SIGN_UP",
+    frontendValue: "Sign Up",
+  },
+  ORDER_CREATE: {
+    backendValue: "ORDER_CREATE",
+    frontendValue: "Order Create",
+  },
+};
 
 const SelectEventSchema = Yup.object().shape({
   eventType: Yup.string().required("Event type is required"),
 });
 
 const SelectEventModal = ({
-  dialogTrigger,
+  isModalOpen,
+  setIsModalOpen,
 }: {
-  dialogTrigger: React.ReactNode;
+  isModalOpen: boolean;
+  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const [loading, setLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const { toast } = useToast();
 
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-      <DialogTrigger asChild>{dialogTrigger}</DialogTrigger>
-
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Select an Option</DialogTitle>
@@ -50,10 +60,11 @@ const SelectEventModal = ({
           validationSchema={SelectEventSchema}
           onSubmit={async (values, { setSubmitting }) => {
             setLoading(true);
+            console.log("values event type", values);
             try {
-              // Handle form submission
-              dispatch(setEventStage(StepEnum.SET_EVENT_DATA));
               dispatch(setSelectedEvent(values.eventType));
+
+              navigate(`/dashboard/event/new?event=${values.eventType}`);
               setIsModalOpen(false);
               toast({
                 title: "Event type selected successfully",
@@ -80,7 +91,7 @@ const SelectEventModal = ({
                   className="w-full p-2 border rounded"
                   placeHolder="Select an option"
                 >
-                  {eventTypeOptions.map((option) => (
+                  {eventTypeOptions.map((option: any) => (
                     <option key={option.value} value={option.value}>
                       {option.label}
                     </option>

@@ -1,35 +1,30 @@
 import { useState, useEffect } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "@remix-run/react";
 import { redirect } from "react-router";
 
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   createLoyaltyEvent,
-  setEventStage,
-  StepEnum,
   updateLoyaltyEvent,
 } from "@/store/event/eventSlice";
 import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
 import { Form as FormikForm, Formik } from "formik";
 import { Card, Layout, Page, Select, TextField } from "@shopify/polaris";
 
-enum SpendingType {
-  FIXED = "fixed",
-  PERCENTAGE = "percentage",
-}
+// enum SpendingType {
+//   FIXED = "fixed",
+//   PERCENTAGE = "percentage",
+// }
 
-interface FormDataState {
-  points: string;
-  expiryDate: string;
-  icon: string;
-  minOrderValue: number;
-  maxOrderValue: number;
-  spendingType: SpendingType;
-  spendingLimit: number;
-}
+// interface FormDataState {
+//   points: string;
+//   expiryDate: string;
+//   icon: string;
+//   minOrderValue: number;
+//   maxOrderValue: number;
+//   spendingType: SpendingType;
+//   spendingLimit: number;
+// }
 
 export default function EventForm({ eventData, actionData, isUpdate }: any) {
   //   // const router = useLocation();

@@ -1,3 +1,4 @@
+import LotaltyEventForm from "@/components/event/LotaltyEventForm";
 import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
 import {
   clearSelectedLoyaltyEvent,
@@ -38,5 +39,5 @@ export default function EditEvent() {
     return <div>Loading...</div>;
   }
 
-  return <EventForm eventData={selectedTierEvent} isUpdate />;
+  return <LotaltyEventForm eventData={selectedTierEvent} isUpdate />;
 }
