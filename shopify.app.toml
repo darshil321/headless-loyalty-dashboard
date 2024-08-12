@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://final-dv-appearance-interest.trycloudflare.com"
+application_url = "https://cg-railway-imports-believe.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,17 +17,17 @@ scopes = "read_discounts,read_orders,read_price_rules,read_products,write_discou
 
 [auth]
 redirect_urls = [
-  "https://final-dv-appearance-interest.trycloudflare.com/auth/callback",
-  "https://final-dv-appearance-interest.trycloudflare.com/auth/shopify/callback",
-  "https://final-dv-appearance-interest.trycloudflare.com/api/auth/callback"
+  "https://cg-railway-imports-believe.trycloudflare.com/auth/callback",
+  "https://cg-railway-imports-believe.trycloudflare.com/auth/shopify/callback",
+  "https://cg-railway-imports-believe.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-07"
 
   [[webhooks.subscriptions]]
-  topics = [ "app/uninstalled" ]
-  uri = "/webhooks"
+  topics = [ "app/uninstalled", "orders/create" ]
+  uri = "https://9offq7b4x6.execute-api.us-east-2.amazonaws.com/v1/shopify/webhook"
 
 [pos]
 embedded = false
