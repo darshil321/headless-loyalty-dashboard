@@ -7,7 +7,7 @@ import {
   Badge,
   BlockStack,
 } from "@shopify/polaris";
-import { useNavigate, useParams } from "@remix-run/react";
+import { useNavigate, useParams, useSearchParams } from "@remix-run/react";
 
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -37,39 +37,19 @@ export default function CustomerDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get("userId");
 
   const selectedCustomer = useAppSelector(
     (state: any) => state.user.selectedLoyaltyUser,
   );
-  // const userTransactions = useAppSelector(
-  //   (state: any) => state.transaction.loyaltyTransaction,
-  // );
+  const userTransactions = useAppSelector(
+    (state: any) => state.transaction.selectedLoyaltyTransaction,
+  );
+
+  console.log("userTransactions", userTransactions);
 
   const [showDialog, setShowDialog] = useState(false);
-
-  let userTransactions = [
-    {
-      expiresAt: "2024-08-12 23:59:59",
-      description: "Purchase of groceries",
-      status: "Completed",
-      pointsUsed: 100,
-      type: "Debit",
-    },
-    {
-      expiresAt: "2024-08-15 14:30:00",
-      description: "Payment for online services",
-      status: "Pending",
-      pointsUsed: 50,
-      type: "Credit",
-    },
-    {
-      expiresAt: "2024-08-18 10:00:00",
-      description: "Shopping spree",
-      status: "Completed",
-      pointsUsed: 200,
-      type: "Debit",
-    },
-  ];
 
   const handleAdjustPoints = () => {
     setShowDialog(true);
@@ -93,7 +73,7 @@ export default function CustomerDetails() {
         console.error("Error fetching user data:", error);
         navigate("/error");
       });
-      dispatch(getLoyaltyTransactionByUserId(id));
+      dispatch(getLoyaltyTransactionByUserId(userId));
     }
 
     return () => {
@@ -108,7 +88,7 @@ export default function CustomerDetails() {
   const transactionItems = userTransactions.map((transaction: any) => (
     <AccordionItem key={transaction.id} value={transaction.id}>
       <AccordionTrigger>
-        {`${transaction.type === "DEBIT" ? "-" : "+"}${transaction.points} Points - ${new Date(transaction.createdAt).toLocaleDateString()}`}
+        {`${transaction.type === "DEBIT" ? "-" : "+"}${transaction.points} Points - Expires At ${new Date(transaction.expiresAt).toLocaleDateString()}`}
       </AccordionTrigger>
       <AccordionContent>
         <BlockStack align="space-between">
@@ -134,32 +114,37 @@ export default function CustomerDetails() {
               </BlockStack>
               <BlockStack gap={"200"} align="space-between">
                 <Text as="p" variant="bodyMd">
-                  Email: {selectedCustomer.email}
+                  UserId: {selectedCustomer.wallet.userId}
                 </Text>
                 <Text as="p" variant="bodyMd">
+                  Tier: {selectedCustomer.tier.name}
+                </Text>
+                {/* <Text as="p" variant="bodyMd">
                   Name: {selectedCustomer.name}
-                </Text>
-                <Text as="p" variant="bodyMd">
+                </Text> */}
+                {/* <Text as="p" variant="bodyMd">
                   Phone Number: {selectedCustomer.phoneNumber}
-                </Text>
-                <Text as="p" variant="bodyMd">
+                </Text> */}
+                {/* <Text as="p" variant="bodyMd">
                   Birthday: {selectedCustomer.birthday}
-                </Text>
-                <Text as="p" variant="bodyMd">
+                </Text> */}
+                {/* <Text as="p" variant="bodyMd">
                   Type: {selectedCustomer.type}
                 </Text>
                 <Text as="p" variant="bodyMd">
                   Customer Since: {selectedCustomer.customerSince}
-                </Text>
+                </Text> */}
               </BlockStack>
             </BlockStack>
           </Card>
 
-          <Card>
-            <Accordion collapsible type="single">
-              {transactionItems}
-            </Accordion>
-          </Card>
+          <div className="mt-5">
+            <Card>
+              <Accordion collapsible type="single">
+                {transactionItems}
+              </Accordion>
+            </Card>
+          </div>
         </Layout.Section>
         <Layout.Section variant="oneThird">
           <Card>
@@ -175,7 +160,7 @@ export default function CustomerDetails() {
               </Text>
               <BlockStack align="space-between">
                 <Text as="h1" variant="headingMd">
-                  Points: {selectedCustomer.totalPoints}
+                  Points: {selectedCustomer.wallet.totalPoints}
                 </Text>
               </BlockStack>
               <Button onClick={() => console.log("Redeem Points")}>

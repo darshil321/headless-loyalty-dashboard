@@ -28,6 +28,7 @@ const LoyaltyEventForm = ({
     label: tier.name,
     value: tier.id,
   }));
+
   console.log("eventType", eventType);
 
   useEffect(() => {
@@ -42,7 +43,7 @@ const LoyaltyEventForm = ({
   }, [submitted]);
 
   const getValidationSchema = () => {
-    let schema = {
+    let schema: any = {
       points: Yup.number()
         .required("Points are required")
         .min(0, "Points must be non-negative"),
@@ -70,14 +71,31 @@ const LoyaltyEventForm = ({
     return Yup.object(schema);
   };
 
-  const submitEventData = async (values) => {
+  const submitEventData = async (values: any) => {
     try {
       setSubmitted(true);
       if (isUpdate) {
         const { id, ...restValues } = values;
-        await dispatch(updateLoyaltyEvent({ id, ...restValues }));
+        await dispatch(
+          updateLoyaltyEvent({ id, ...restValues, event: eventType }),
+        );
       } else {
-        await dispatch(createLoyaltyEvent(values));
+        const { maxOrderValue, minOrderValue, points, spendingLimit } = values;
+
+        const valuesToSend = {
+          ...values,
+          event: eventType,
+          points: parseInt(points),
+          expiryDate: new Date(values.expiryDate).toISOString(),
+        };
+
+        if (minOrderValue && maxOrderValue && spendingLimit) {
+          valuesToSend.minOrderValue = parseInt(minOrderValue);
+          valuesToSend.maxOrderValue = parseInt(maxOrderValue);
+          valuesToSend.spendingLimit = parseInt(spendingLimit);
+        }
+
+        await dispatch(createLoyaltyEvent(valuesToSend));
       }
       navigate("/dashboard/events");
     } catch (error) {
@@ -129,120 +147,170 @@ const LoyaltyEventForm = ({
             <Layout>
               <Layout.Section>
                 <Card sectioned>
-                  <TextField
-                    label="Points"
-                    type="number"
-                    name="points"
-                    value={values.points}
-                    onChange={(value) => {
-                      handleChange({
-                        target: { name: "points", value: value },
-                      });
-                    }}
-                    onBlur={handleBlur}
-                    error={touched.points && errors.points}
-                  />
-                  <TextField
-                    label="Expiry Date"
-                    type="date"
-                    name="expiryDate"
-                    value={values.expiryDate}
-                    onChange={(value) => {
-                      console.log("value", value);
-                      handleChange({
-                        target: { name: "expiryDate", value: value },
-                      });
-                    }}
-                    onBlur={handleBlur}
-                    error={touched.expiryDate && errors.expiryDate}
-                  />
-                  {eventType !== "SIGN_UP" && (
-                    <>
-                      <TextField
-                        label="Minimum Order Value"
-                        type="number"
-                        name="minOrderValue"
-                        value={values.minOrderValue}
-                        onChange={(value) => {
-                          console.log("value", value);
-                          handleChange({
-                            target: { name: "minOrderValue", value: value },
-                          });
-                        }}
-                        onBlur={handleBlur}
-                        error={touched.minOrderValue && errors.minOrderValue}
-                      />
-                      <TextField
-                        label="Maximum Order Value"
-                        type="number"
-                        name="maxOrderValue"
-                        value={values.maxOrderValue}
-                        onChange={(value) => {
-                          console.log("value", value);
-                          handleChange({
-                            target: { name: "maxOrderValue", value: value },
-                          });
-                        }}
-                        onBlur={handleBlur}
-                        error={touched.maxOrderValue && errors.maxOrderValue}
-                      />
-                      <Select
-                        label="Spending Type"
-                        name="spendingType"
-                        options={[
-                          { label: "Fixed", value: "FIXED" },
-                          { label: "Percentage", value: "PERCENTAGE" },
-                        ]}
-                        value={values.spendingType}
-                        onChange={(value) =>
-                          handleChange({
-                            target: { name: "spendingType", value: value },
-                          })
-                        }
-                        error={touched.spendingType && errors.spendingType}
-                      />
-                      <TextField
-                        label="Spending Limit"
-                        type="number"
-                        name="spendingLimit"
-                        value={values.spendingLimit}
-                        onChange={(value) =>
-                          handleChange({
-                            target: {
-                              name: "spendingLimit",
-                              value: value,
-                            },
-                          })
-                        }
-                        onBlur={handleBlur}
-                        error={touched.spendingLimit && errors.spendingLimit}
-                      />
-                    </>
-                  )}
-                  <Select
-                    label="Tier"
-                    name="tierId"
-                    options={tierOptions}
-                    value={values.tierId}
-                    onChange={(value) =>
-                      handleChange({ target: { name: "tierId", value: value } })
-                    }
-                    error={touched.tierId && errors.tierId}
-                  />
-                  <Select
-                    label="Type"
-                    name="type"
-                    placeholder="Select an option"
-                    options={[
-                      { label: "Credit", value: "CREDIT" },
-                      { label: "Debit", value: "DEBIT" },
-                    ]}
-                    value={values.type}
-                    onChange={(value) =>
-                      handleChange({ target: { name: "type", value: value } })
-                    }
-                    error={touched.type && errors.type}
-                  />
+                  <div className="py-3">
+                    <div className="grid grid-cols-4 gap-3 items-end">
+                      <div className="col-span-2">
+                        <Select
+                          label="Tier"
+                          name="tierId"
+                          placeholder="Select Tier"
+                          options={tierOptions}
+                          value={values.tierId}
+                          onChange={(value) =>
+                            handleChange({
+                              target: { name: "tierId", value: value },
+                            })
+                          }
+                          error={touched.tierId && errors.tierId}
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Select
+                          label="Type"
+                          name="type"
+                          placeholder="Select an option"
+                          options={[
+                            { label: "Credit", value: "CREDIT" },
+                            { label: "Debit", value: "DEBIT" },
+                          ]}
+                          value={values.type}
+                          onChange={(value) =>
+                            handleChange({
+                              target: { name: "type", value: value },
+                            })
+                          }
+                          error={touched.type && errors.type}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-4 gap-3 items-end mt-5">
+                      <div className="col-span-2">
+                        <TextField
+                          label="Points"
+                          type="number"
+                          name="points"
+                          value={values.points}
+                          onChange={(value) => {
+                            handleChange({
+                              target: { name: "points", value: value },
+                            });
+                          }}
+                          onBlur={handleBlur}
+                          error={touched.points && errors.points}
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <TextField
+                          label="Expiry Date"
+                          type="date"
+                          name="expiryDate"
+                          value={values.expiryDate}
+                          onChange={(value) => {
+                            console.log("value", value);
+                            handleChange({
+                              target: { name: "expiryDate", value: value },
+                            });
+                          }}
+                          onBlur={handleBlur}
+                          error={touched.expiryDate && errors.expiryDate}
+                        />
+                      </div>
+                    </div>
+
+                    {eventType !== "SIGN_UP" && (
+                      <>
+                        <div className="grid grid-cols-4 gap-3 items-end mt-5">
+                          <div className="col-span-2">
+                            <TextField
+                              label="Minimum Order Value"
+                              type="number"
+                              name="minOrderValue"
+                              value={values.minOrderValue}
+                              onChange={(value) => {
+                                console.log("value", value);
+                                handleChange({
+                                  target: {
+                                    name: "minOrderValue",
+                                    value: value,
+                                  },
+                                });
+                              }}
+                              onBlur={handleBlur}
+                              error={
+                                touched.minOrderValue && errors.minOrderValue
+                              }
+                            />
+                          </div>
+                          <div className="col-span-2">
+                            <TextField
+                              label="Maximum Order Value"
+                              type="number"
+                              name="maxOrderValue"
+                              value={values.maxOrderValue}
+                              onChange={(value) => {
+                                console.log("value", value);
+                                handleChange({
+                                  target: {
+                                    name: "maxOrderValue",
+                                    value: value,
+                                  },
+                                });
+                              }}
+                              onBlur={handleBlur}
+                              error={
+                                touched.maxOrderValue && errors.maxOrderValue
+                              }
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-4 gap-3 items-end mt-5">
+                          <div className="col-span-2">
+                            <Select
+                              label="Spending Type"
+                              name="spendingType"
+                              placeholder="Select Type"
+                              options={[
+                                { label: "Fixed", value: "FIXED" },
+                                { label: "Percentage", value: "PERCENTAGE" },
+                              ]}
+                              value={values.spendingType}
+                              onChange={(value) =>
+                                handleChange({
+                                  target: {
+                                    name: "spendingType",
+                                    value: value,
+                                  },
+                                })
+                              }
+                              error={
+                                touched.spendingType && errors.spendingType
+                              }
+                            />
+                          </div>
+                          <div className="col-span-2">
+                            <TextField
+                              label="Spending Limit"
+                              type="number"
+                              name="spendingLimit"
+                              value={values.spendingLimit}
+                              onChange={(value) =>
+                                handleChange({
+                                  target: {
+                                    name: "spendingLimit",
+                                    value: value,
+                                  },
+                                })
+                              }
+                              onBlur={handleBlur}
+                              error={
+                                touched.spendingLimit && errors.spendingLimit
+                              }
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </Card>
               </Layout.Section>
             </Layout>

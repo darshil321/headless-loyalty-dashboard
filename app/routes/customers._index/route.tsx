@@ -22,8 +22,8 @@ export default function CustomersTable() {
   const users = useAppSelector((state) => state.user.loyaltyUsers);
   const loading = useAppSelector((state) => state.user.loading);
 
-  const handleDetail = (id: string) => {
-    navigate(`/customers/${id}`);
+  const handleDetail = (id: string, userId: string) => {
+    navigate(`/customers/${id}?userId=${userId}`);
   };
 
   const resourceName = {
@@ -47,10 +47,10 @@ export default function CustomersTable() {
         </Text>
       </IndexTable.Cell>
       <IndexTable.Cell>{user.totalPoints}</IndexTable.Cell>
-      <IndexTable.Cell>{user.tierId}</IndexTable.Cell>
+      <IndexTable.Cell>{user.tier.name}</IndexTable.Cell>
       <IndexTable.Cell>
         <Button
-          onClick={() => handleDetail(user.id)}
+          onClick={() => handleDetail(user.id, user.userId)}
           icon={ViewIcon}
           external
         />

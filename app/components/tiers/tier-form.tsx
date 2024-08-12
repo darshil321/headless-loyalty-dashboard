@@ -13,7 +13,7 @@ import {
 import { useAppDispatch } from "@/store/hooks";
 import { createLoyaltyTier, updateLoyaltyTier } from "@/store/tier/tierSlice";
 import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
-import { useNavigate } from "@remix-run/react";
+import { useNavigate, useParams } from "@remix-run/react";
 
 const validationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
@@ -22,24 +22,44 @@ const validationSchema = Yup.object({
   default: Yup.boolean(),
   rules: Yup.array().of(
     Yup.object({
-      ruleType: Yup.string().required("Rule type is required"),
-      operator: Yup.string().required("Operator is required"),
-      value: Yup.number().required("Value is required"),
-    }),
+      ruleType: Yup.string(),
+      operator: Yup.string(),
+      value: Yup.number(),
+    }).test(
+      "complete-rule",
+      "All fields in the rule must be completed",
+      (item: any) => {
+        if (!item || Object.values(item).every((x) => !x)) return true; // allow completely empty objects
+        return (
+          item.ruleType && item.operator && (item.value || item.value === 0)
+        ); // ensure all fields are filled
+      },
+    ),
   ),
   benefits: Yup.array().of(
     Yup.object({
-      benefitType: Yup.string().required("Benefit type is required"),
-      description: Yup.string().required("Description is required"),
-      criteria: Yup.string().required("Criteria is required"),
-      value: Yup.number().required("Value is required"),
-    }),
+      benefitType: Yup.string(),
+      description: Yup.string(),
+      criteria: Yup.string(),
+      value: Yup.number(),
+    }).test(
+      "complete-benefit",
+      "All fields in the benefit must be completed",
+      (item: any) => {
+        if (!item || Object.values(item).every((x) => !x)) return true; // allow completely empty objects
+        return (
+          item.benefitType &&
+          item.description &&
+          item.criteria &&
+          (item.value || item.value === 0)
+        ); // ensure all fields are filled
+      },
+    ),
   ),
 });
 
 const TierForm = ({ tierData, actionData, isUpdate }: any) => {
   const [submitted, setSubmitted] = React.useState(false);
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedConfig = JSON.parse(
@@ -57,8 +77,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
       setSubmitted(!submitted);
       if (isUpdate) {
         const { id, ...restValues } = values;
-        const _values = { loyaltyTier: restValues, id };
-        console.log("_values", _values);
+        const _values = { loyaltyTier: restValues, id: tierData.id };
         await dispatch(updateLoyaltyTier(_values)); // Dispatch update action
       } else {
         await dispatch(createLoyaltyTier(values)); // Dispatch create action
