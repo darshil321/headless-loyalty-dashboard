@@ -70,7 +70,7 @@ const LoyaltyEventForm = ({
     return Yup.object(schema);
   };
 
-  const submitEventData = async (values) => {
+  const submitEventData = async (values: any) => {
     try {
       setSubmitted(true);
       if (isUpdate) {
@@ -128,20 +128,7 @@ const LoyaltyEventForm = ({
           >
             <Layout>
               <Layout.Section>
-                <Card sectioned>
-                  <TextField
-                    label="Points"
-                    type="number"
-                    name="points"
-                    value={values.points}
-                    onChange={(value) => {
-                      handleChange({
-                        target: { name: "points", value: value },
-                      });
-                    }}
-                    onBlur={handleBlur}
-                    error={touched.points && errors.points}
-                  />
+                <Card>
                   <TextField
                     label="Expiry Date"
                     type="date"
@@ -153,8 +140,9 @@ const LoyaltyEventForm = ({
                         target: { name: "expiryDate", value: value },
                       });
                     }}
+                    autoComplete="on"
                     onBlur={handleBlur}
-                    error={touched.expiryDate && errors.expiryDate}
+                    error={touched.expiryDate && (errors.expiryDate as any)}
                   />
                   {eventType !== "SIGN_UP" && (
                     <>
@@ -169,8 +157,12 @@ const LoyaltyEventForm = ({
                             target: { name: "minOrderValue", value: value },
                           });
                         }}
+                        autoComplete="on"
                         onBlur={handleBlur}
-                        error={touched.minOrderValue && errors.minOrderValue}
+                        error={
+                          touched.minOrderValue &&
+                          (errors.minOrderValue as string)
+                        }
                       />
                       <TextField
                         label="Maximum Order Value"
@@ -183,8 +175,12 @@ const LoyaltyEventForm = ({
                             target: { name: "maxOrderValue", value: value },
                           });
                         }}
+                        autoComplete="on"
                         onBlur={handleBlur}
-                        error={touched.maxOrderValue && errors.maxOrderValue}
+                        error={
+                          touched.maxOrderValue &&
+                          (errors.maxOrderValue as string)
+                        }
                       />
                       <Select
                         label="Spending Type"
@@ -199,13 +195,17 @@ const LoyaltyEventForm = ({
                             target: { name: "spendingType", value: value },
                           })
                         }
-                        error={touched.spendingType && errors.spendingType}
+                        error={
+                          touched.spendingType &&
+                          (errors.spendingType as string)
+                        }
                       />
                       <TextField
                         label="Spending Limit"
                         type="number"
                         name="spendingLimit"
                         value={values.spendingLimit}
+                        autoComplete="on"
                         onChange={(value) =>
                           handleChange({
                             target: {
@@ -215,7 +215,10 @@ const LoyaltyEventForm = ({
                           })
                         }
                         onBlur={handleBlur}
-                        error={touched.spendingLimit && errors.spendingLimit}
+                        error={
+                          touched.spendingLimit &&
+                          (errors.spendingLimit as string)
+                        }
                       />
                     </>
                   )}
@@ -227,7 +230,7 @@ const LoyaltyEventForm = ({
                     onChange={(value) =>
                       handleChange({ target: { name: "tierId", value: value } })
                     }
-                    error={touched.tierId && errors.tierId}
+                    error={touched.tierId && (errors.tierId as string)}
                   />
                   <Select
                     label="Type"
@@ -241,7 +244,7 @@ const LoyaltyEventForm = ({
                     onChange={(value) =>
                       handleChange({ target: { name: "type", value: value } })
                     }
-                    error={touched.type && errors.type}
+                    error={touched.type && (errors.type as string)}
                   />
                 </Card>
               </Layout.Section>
