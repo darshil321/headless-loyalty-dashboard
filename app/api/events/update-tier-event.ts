@@ -1,10 +1,9 @@
 import { put } from "@/lib/axios-api-instance";
-import { TierFormData } from "@/lib/constants/constants";
 import { logger } from "@/lib/logger";
 
 export const updateTierEventAPI = async (
   eventId: string,
-  tierEventData: TierFormData,
+  tierEventData: any,
 ) => {
   try {
     const apiCall = await put(`/loyalty_tier_events/${eventId}`, tierEventData);

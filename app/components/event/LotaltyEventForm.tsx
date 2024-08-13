@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "@remix-run/react";
+import { useNavigate, useParams } from "@remix-run/react";
 import { Formik, Form as FormikForm } from "formik";
 import * as Yup from "yup";
 import { TextField, Page, Layout, Select, Card } from "@shopify/polaris";
@@ -71,13 +71,30 @@ const LoyaltyEventForm = ({
     return Yup.object(schema);
   };
 
+  const { eventId } = useParams();
+  console.log("eventData", eventData);
+
   const submitEventData = async (values: any) => {
     try {
       setSubmitted(true);
       if (isUpdate) {
-        const { id, ...restValues } = values;
+        const { maxOrderValue, minOrderValue, points, spendingLimit } = values;
+        const valuesToSend = {
+          ...values,
+          event: eventData.event,
+          points: parseInt(points),
+          expiryDate: new Date(values.expiryDate).toISOString(),
+        };
+
+        if (minOrderValue && maxOrderValue && spendingLimit) {
+          valuesToSend.minOrderValue = parseInt(minOrderValue);
+          valuesToSend.maxOrderValue = parseInt(maxOrderValue);
+          valuesToSend.spendingLimit = parseInt(spendingLimit);
+        }
+
+        const { id, ...restValues } = valuesToSend;
         await dispatch(
-          updateLoyaltyEvent({ id, ...restValues, event: eventType }),
+          updateLoyaltyEvent({ id: eventId, loyaltyEventData: restValues }),
         );
       } else {
         const { maxOrderValue, minOrderValue, points, spendingLimit } = values;

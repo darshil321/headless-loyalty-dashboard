@@ -58,10 +58,10 @@ export const updateLoyaltyEvent: any = createAsyncThunk(
   "loyaltyEvent/update",
   async (loyaltyData: any, thunkAPI) => {
     try {
-      const response = await updateTierEventAPI(
-        loyaltyData.id,
-        loyaltyData.loyaltyEventData,
-      );
+      const data = {
+        loyaltyTierEvent: loyaltyData.loyaltyEventData,
+      };
+      const response = await updateTierEventAPI(loyaltyData.id, data);
       return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data);
