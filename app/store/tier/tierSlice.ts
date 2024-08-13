@@ -5,6 +5,7 @@ import { updateTierAPI } from "@/api/tiers/update-tier";
 import { deleteTierAPI } from "@/api/tiers/delete-tier";
 import { getTierAPI } from "@/api/tiers/get-tier";
 import { listTiersAPI } from "@/api/tiers/list-tiers";
+import { deleteTierBenefitAPI } from "@/api/tiers/delete-tier-benefit";
 
 // Define initial state for the slice
 const initialState = {
@@ -46,6 +47,19 @@ export const deleteLoyaltyTier: any = createAsyncThunk(
     try {
       await deleteTierAPI(loyaltyId);
       return loyaltyId; // Return the deleted loyaltyId
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const deleteLoyaltyTierBenefit: any = createAsyncThunk(
+  "loyaltyTierBenefit/delete",
+  async (data: any, thunkAPI) => {
+    try {
+      const { benefitId, tierId } = data;
+      await deleteTierBenefitAPI(tierId, benefitId);
+      return benefitId; // Return the deleted loyaltyId
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data);
     }

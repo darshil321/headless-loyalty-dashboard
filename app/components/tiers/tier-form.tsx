@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form as FormikForm, FieldArray } from "formik";
 import * as Yup from "yup";
 import {
@@ -7,11 +7,17 @@ import {
   Card,
   Layout,
   Page,
-  Checkbox,
+  // Checkbox,
+  Modal,
   Button,
+  TextContainer,
 } from "@shopify/polaris";
 import { useAppDispatch } from "@/store/hooks";
-import { createLoyaltyTier, updateLoyaltyTier } from "@/store/tier/tierSlice";
+import {
+  createLoyaltyTier,
+  deleteLoyaltyTierBenefit,
+  updateLoyaltyTier,
+} from "@/store/tier/tierSlice";
 import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
 import { useNavigate } from "@remix-run/react";
 
@@ -19,7 +25,7 @@ const validationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
   description: Yup.string().required("Description is required"),
   status: Yup.string().required("Status is required"),
-  default: Yup.boolean(),
+  // default: Yup.boolean(),
   rules: Yup.array().of(
     Yup.object({
       ruleType: Yup.string(),
@@ -38,7 +44,7 @@ const validationSchema = Yup.object({
   ),
   benefits: Yup.array().of(
     Yup.object({
-      benefitType: Yup.string(),
+      BenefitType: Yup.string(),
       description: Yup.string(),
       criteria: Yup.string(),
       value: Yup.number(),
@@ -48,7 +54,7 @@ const validationSchema = Yup.object({
       (item: any) => {
         if (!item || Object.values(item).every((x) => !x)) return true; // allow completely empty objects
         return (
-          item.benefitType &&
+          item.BenefitType &&
           item.description &&
           item.criteria &&
           (item.value || item.value === 0)
@@ -59,7 +65,10 @@ const validationSchema = Yup.object({
 });
 
 const TierForm = ({ tierData, actionData, isUpdate }: any) => {
-  const [submitted, setSubmitted] = React.useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [activeModal, setActiveModal] = useState(false);
+  const [currentBenefitIndex, setCurrentBenefitIndex] = useState(null);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedConfig = JSON.parse(
@@ -70,9 +79,32 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
     }
   }, [submitted]);
 
+  const handleModalChange = () => {
+    setActiveModal(!activeModal);
+  };
+
+  const handleDeleteBenefit = (arrayHelpers: any) => {
+    if (currentBenefitIndex !== null) {
+      const data = {
+        benefitId: tierData.benefits[currentBenefitIndex].id,
+        tierId: tierData.id,
+      };
+      dispatch(deleteLoyaltyTierBenefit(data));
+      arrayHelpers.remove(currentBenefitIndex);
+      handleModalChange(); // Close modal after deletion
+    }
+  };
+
+  const openModal = (index: any) => {
+    setCurrentBenefitIndex(index);
+    handleModalChange();
+  };
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
   const submitTierData = async (values: any) => {
+    console.log("values", values);
     try {
       setSubmitted(!submitted);
       if (isUpdate) {
@@ -80,6 +112,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
         const _values = { loyaltyTier: restValues, id: tierData.id };
         await dispatch(updateLoyaltyTier(_values)); // Dispatch update action
       } else {
+        values.default = false;
         await dispatch(createLoyaltyTier(values)); // Dispatch create action
       }
       navigate("/tiers");
@@ -94,10 +127,10 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
         name: tierData?.name || "",
         description: tierData?.description || "",
         status: tierData?.status || "inactive",
-        default: tierData?.default || false,
+        // default: tierData?.default || false,
         rules: tierData?.rules || [{ ruleType: "", operator: "", value: "0" }],
         benefits: tierData?.benefits || [
-          { benefitType: "", description: "", criteria: "", value: "0" },
+          { BenefitType: "", description: "", criteria: "", value: "0" },
         ],
       }}
       validationSchema={validationSchema}
@@ -167,11 +200,13 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                   </div>
                   <div className="mt-5">
                     <PolarisSelect
+                      disabled={!isUpdate}
                       label="Status"
                       name="status"
+                      placeholder="Select status"
                       options={[
-                        { label: "Active", value: "ACTIVE" },
                         { label: "Inactive", value: "INACTIVE" },
+                        { label: "Active", value: "ACTIVE" },
                       ]}
                       value={values.status}
                       onChange={(value) => {
@@ -182,7 +217,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                       error={touched.status && errors.status}
                     />
                   </div>
-                  <div className="mt-5">
+                  {/* <div className="mt-5">
                     <Checkbox
                       label="Default"
                       name="default"
@@ -192,7 +227,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                         setFieldValue("default", checked);
                       }}
                     />
-                  </div>
+                  </div> */}
                   {/* rulesarray ===============> */}
                   <div className="mt-5">
                     <FieldArray name="rules">
@@ -309,25 +344,22 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                 <div className="col-span-4">
                                   <PolarisSelect
                                     label="Benefit Type"
-                                    name={`benefits[${index}].benefitType`}
+                                    name={`benefits[${index}].BenefitType`}
+                                    placeholder="Select type"
                                     options={[
-                                      {
-                                        label: "Select Type",
-                                        value: "",
-                                      },
                                       { label: "Shipping", value: "shipping" },
                                       { label: "Discount", value: "discount" },
                                     ]}
-                                    value={values.benefits[index].benefitType}
+                                    value={values.benefits[index].BenefitType}
                                     onChange={(value) =>
                                       setFieldValue(
-                                        `benefits[${index}].benefitType`,
+                                        `benefits[${index}].BenefitType`,
                                         value,
                                       )
                                     }
                                     error={
-                                      touched.benefits?.[index]?.benefitType &&
-                                      errors.benefits?.[index]?.benefitType
+                                      touched.benefits?.[index]?.BenefitType &&
+                                      errors.benefits?.[index]?.BenefitType
                                     }
                                   />
                                 </div>
@@ -403,7 +435,10 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                 </div>
                                 <div className="col-span-2">
                                   <Button
-                                    onClick={() => arrayHelpers.remove(index)}
+                                    onClick={() => {
+                                      if (benefit.id) openModal(index);
+                                      else arrayHelpers.remove(index);
+                                    }}
                                   >
                                     Remove
                                   </Button>
@@ -415,7 +450,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                             <Button
                               onClick={() =>
                                 arrayHelpers.push({
-                                  benefitType: "",
+                                  BenefitType: "",
                                   description: "",
                                   criteria: "",
                                   value: 0,
@@ -425,6 +460,28 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                               Add Benefit
                             </Button>
                           </div>
+                          <Modal
+                            open={activeModal}
+                            onClose={handleModalChange}
+                            title="Are you sure you want to delete this benefit?"
+                            primaryAction={{
+                              content: "Delete",
+                              onAction: () => handleDeleteBenefit(arrayHelpers),
+                              destructive: true,
+                            }}
+                            secondaryActions={[
+                              {
+                                content: "Cancel",
+                                onAction: handleModalChange,
+                              },
+                            ]}
+                          >
+                            <Modal.Section>
+                              <TextContainer>
+                                <p>Do you want to remove the benefits?</p>
+                              </TextContainer>
+                            </Modal.Section>
+                          </Modal>
                         </>
                       )}
                     </FieldArray>
