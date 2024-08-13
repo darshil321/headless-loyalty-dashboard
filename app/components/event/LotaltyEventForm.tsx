@@ -203,7 +203,7 @@ const LoyaltyEventForm = ({
                     <div className="grid grid-cols-4 gap-3 items-end mt-5">
                       <div className="col-span-2">
                         <TextField
-                          label="Points"
+                          label="Value (Fixed or Percentage)"
                           type="number"
                           name="points"
                           value={values.points}

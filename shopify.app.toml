@@ -3,12 +3,12 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://blond-letting-sp-confidential.trycloudflare.com"
+application_url = "https://accepts-disclaimer-joke-plots.trycloudflare.com"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-dev_store_url = "store-testing-devloylx.myshopify.com"
+dev_store_url = "loyalt-devx.myshopify.com"
 include_config_on_deploy = true
 
 [access_scopes]
@@ -17,9 +17,9 @@ scopes = "read_discounts,read_orders,read_price_rules,read_products,write_discou
 
 [auth]
 redirect_urls = [
-  "https://blond-letting-sp-confidential.trycloudflare.com/auth/callback",
-  "https://blond-letting-sp-confidential.trycloudflare.com/auth/shopify/callback",
-  "https://blond-letting-sp-confidential.trycloudflare.com/api/auth/callback"
+  "https://accepts-disclaimer-joke-plots.trycloudflare.com/auth/callback",
+  "https://accepts-disclaimer-joke-plots.trycloudflare.com/auth/shopify/callback",
+  "https://accepts-disclaimer-joke-plots.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
