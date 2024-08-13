@@ -126,7 +126,9 @@ const LoyaltyEventForm = ({
     <Formik
       initialValues={{
         points: eventData?.points + 0 || 0,
-        expiryDate: eventData?.expiryDate || "",
+        expiryDate: eventData?.expiryDate
+          ? new Date(eventData.expiryDate).toISOString().split("T")[0]
+          : "",
         minOrderValue: eventData?.minOrderValue || null,
         maxOrderValue: eventData?.maxOrderValue || null,
         spendingLimit: eventData?.spendingLimit || null,
