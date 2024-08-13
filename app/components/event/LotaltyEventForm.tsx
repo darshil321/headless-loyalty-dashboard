@@ -22,7 +22,8 @@ const LoyaltyEventForm = ({
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const tiers = useAppSelector((state) => state.tier.loyaltyTiers);
-  const eventType = useAppSelector((state) => state.event.selectedEvent);
+  const _eventType = useAppSelector((state) => state.event.selectedEvent);
+  const eventType = isUpdate ? eventData?.event : _eventType;
 
   const tierOptions = tiers?.map((tier: any) => ({
     label: tier.name,
