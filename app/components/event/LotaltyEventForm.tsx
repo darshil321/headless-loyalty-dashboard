@@ -87,12 +87,14 @@ const LoyaltyEventForm = ({
           expiryDate: new Date(values.expiryDate).toISOString(),
         };
 
-        if (minOrderValue && maxOrderValue && spendingLimit) {
+        if (minOrderValue && maxOrderValue) {
           valuesToSend.minOrderValue = parseInt(minOrderValue);
           valuesToSend.maxOrderValue = parseInt(maxOrderValue);
-          valuesToSend.spendingLimit = parseInt(spendingLimit);
         }
 
+        if (spendingLimit) {
+          valuesToSend.spendingLimit = parseInt(spendingLimit);
+        }
         const { id, ...restValues } = valuesToSend;
         await dispatch(
           updateLoyaltyEvent({ id: eventId, loyaltyEventData: restValues }),
@@ -107,9 +109,12 @@ const LoyaltyEventForm = ({
           expiryDate: new Date(values.expiryDate).toISOString(),
         };
 
-        if (minOrderValue && maxOrderValue && spendingLimit) {
+        if (minOrderValue && maxOrderValue) {
           valuesToSend.minOrderValue = parseInt(minOrderValue);
           valuesToSend.maxOrderValue = parseInt(maxOrderValue);
+        }
+
+        if (spendingLimit) {
           valuesToSend.spendingLimit = parseInt(spendingLimit);
         }
 
