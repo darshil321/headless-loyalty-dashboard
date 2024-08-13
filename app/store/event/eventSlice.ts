@@ -172,6 +172,7 @@ export const eventSlice = createSlice({
       state.loading = false;
       // Assuming payload is the fetched loyalty tier object
       state.selectedLoyaltyEvent = action.payload;
+      console.log("selectedLoyaltynnnnnnEvent", state.selectedLoyaltyEvent);
     });
     builder.addCase(getLoyaltyEventById.rejected, (state, action) => {
       state.loading = false;
@@ -189,6 +190,7 @@ export const eventSlice = createSlice({
     });
     builder.addCase(getAllLoyaltyEvents.rejected, (state, action) => {
       state.loading = false;
+
       state.error = action.payload;
     });
   },

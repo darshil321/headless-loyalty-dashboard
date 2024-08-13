@@ -34,7 +34,7 @@ export default function EventIndex() {
   };
 
   const handleEdit = (id: string) => {
-    navigate(`/tiers/${id}`);
+    navigate(`/dashboard/event/${id}`);
   };
 
   const handleClose = () => {

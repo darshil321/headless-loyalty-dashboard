@@ -9,7 +9,7 @@ import { useNavigate, useParams } from "@remix-run/react";
 import { useEffect } from "react";
 
 export default function EditEvent() {
-  const { id } = useParams();
+  const { eventId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -24,7 +24,7 @@ export default function EditEvent() {
       );
       const { host } = storedConfig;
       setupAxiosInterceptors(host);
-      dispatch(getLoyaltyEventById(id)).catch((error: any) => {
+      dispatch(getLoyaltyEventById(eventId)).catch((error: any) => {
         console.log("Error fetching event data:", error);
         navigate("/error");
       });
@@ -33,8 +33,9 @@ export default function EditEvent() {
     return () => {
       dispatch(clearSelectedLoyaltyEvent());
     };
-  }, [id]);
+  }, [eventId]);
 
+  console.log("selectedTierEvent", selectedTierEvent);
   if (!selectedTierEvent) {
     return <div>Loading...</div>;
   }
