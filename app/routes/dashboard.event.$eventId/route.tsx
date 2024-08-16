@@ -13,9 +13,10 @@ export default function EditEvent() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const selectedTierEvent = useAppSelector(
+  const LoyaltyEvent = useAppSelector(
     (state) => state.event.selectedLoyaltyEvent,
   );
+  console.log("LoyaltyEvent", LoyaltyEvent);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -33,12 +34,11 @@ export default function EditEvent() {
     return () => {
       dispatch(clearSelectedLoyaltyEvent());
     };
-  }, [eventId]);
+  }, [eventId, dispatch]);
 
-  console.log("selectedTierEvent", selectedTierEvent);
-  if (!selectedTierEvent) {
-    return <div>Loading...</div>;
+  if (!LoyaltyEvent) {
+    return <div>Loadifffng...</div>;
   }
 
-  return <LotaltyEventForm eventData={selectedTierEvent} isUpdate />;
+  return <LotaltyEventForm eventData={LoyaltyEvent} isUpdate />;
 }

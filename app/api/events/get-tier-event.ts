@@ -3,7 +3,6 @@ import { logger } from "@/lib/logger";
 
 export const getTierEventAPI = async (eventId: string) => {
   try {
-    console.log("here eventId", eventId);
     const apiCall = await get(`/loyalty_tier_events/${eventId}`);
     console.log("here");
     const response = apiCall.data;

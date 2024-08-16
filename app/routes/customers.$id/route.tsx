@@ -5,6 +5,7 @@ import {
   Text,
   Button,
   Badge,
+  InlineGrid,
   BlockStack,
 } from "@shopify/polaris";
 import { useNavigate, useParams, useSearchParams } from "@remix-run/react";
@@ -33,6 +34,20 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
+const statusMap: any = {
+  NO_SPENT: "Not Used",
+  PARTIALLY_SPENT: "Partially Used",
+  FULLY_SPENT: "Fully Used",
+  EXPIRED: "Expired",
+};
+
+const statusColorMap: any = {
+  EXPIRED: "critical-strong",
+  NO_SPENT: "info",
+  PARTIALLY_SPENT: "magic",
+  FULLY_SPENT: "read-only",
+};
+
 export default function CustomerDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -46,8 +61,6 @@ export default function CustomerDetails() {
   const userTransactions = useAppSelector(
     (state: any) => state.transaction.selectedLoyaltyTransaction,
   );
-
-  console.log("userTransactions", userTransactions);
 
   const [showDialog, setShowDialog] = useState(false);
 
@@ -85,105 +98,145 @@ export default function CustomerDetails() {
     return <h1>Loading...</h1>;
   }
 
-  const transactionItems = userTransactions?.map((transaction: any) => (
-    <AccordionItem key={transaction.id} value={transaction.id}>
-      <AccordionTrigger>
-        <div className="flex justify-between w-full pt-2">
-          <div>
-            {`${transaction.type === "DEBIT" ? "-" : "+"}${transaction.points} Points ${transaction.type === "CREDIT" ? "- Expires At " + new Date(transaction.expiresAt).toLocaleDateString() : ""}`}
-          </div>
-          <div>{`${transaction.status}`}</div>
-        </div>
-      </AccordionTrigger>
-      <AccordionContent>
-        <BlockStack>
-          <Text as="p" variant="bodyMd">
-            {transaction.description}
-          </Text>
-
-          <div className="py-2">
-            <Badge
-              tone={transaction.type === "DEBIT" ? "critical" : "success"}
-              size="large"
-            >
-              {transaction.type}
-            </Badge>
-          </div>
-        </BlockStack>
-      </AccordionContent>
-    </AccordionItem>
-  ));
-
   return (
     <Page>
       <Layout>
         <Layout.Section>
           <Card>
-            <BlockStack gap={"500"} align="space-between">
+            <BlockStack gap={"600"} align="space-between">
               <BlockStack gap={"300"} align="space-between">
-                <Text as="h2" variant="headingMd">
+                <Text as="h2" variant="headingLg">
                   Customer overview
                 </Text>
               </BlockStack>
               <BlockStack gap={"200"} align="space-between">
                 <Text as="p" variant="bodyMd">
-                  UserId: {selectedCustomer.wallet.userId}
+                  <b>Email: </b> {selectedCustomer.wallet.email}
                 </Text>
                 <Text as="p" variant="bodyMd">
-                  Tier: {selectedCustomer.tier.name}
-                </Text>
-                {/* <Text as="p" variant="bodyMd">
-                  Name: {selectedCustomer.name}
-                </Text> */}
-                {/* <Text as="p" variant="bodyMd">
-                  Phone Number: {selectedCustomer.phoneNumber}
-                </Text> */}
-                {/* <Text as="p" variant="bodyMd">
-                  Birthday: {selectedCustomer.birthday}
-                </Text> */}
-                {/* <Text as="p" variant="bodyMd">
-                  Type: {selectedCustomer.type}
+                  <b>CustomerId: </b> {selectedCustomer.wallet.userId}
                 </Text>
                 <Text as="p" variant="bodyMd">
-                  Customer Since: {selectedCustomer.customerSince}
-                </Text> */}
+                  <b>Tier :</b> {selectedCustomer.tier.name}
+                </Text>
               </BlockStack>
             </BlockStack>
           </Card>
 
-          <div className="mt-5">
+          <div className="mt-4">
             <Card>
-              <Text as="h2" variant="headingMd">
-                Transactions
-              </Text>
-              <Accordion collapsible type="single">
-                {transactionItems}
-              </Accordion>
+              <BlockStack gap={"400"} align="space-between">
+                <BlockStack gap={"300"} align="space-between">
+                  <Text as="h2" variant="headingLg">
+                    Transactions
+                  </Text>
+                </BlockStack>
+                <Accordion type="single" collapsible>
+                  {userTransactions?.map((transaction: any, index: number) => {
+                    const isoDate = transaction?.expiresAt;
+                    const currentDate: any = new Date();
+                    const givenDate: any = new Date(isoDate);
+                    const diffTime = givenDate - currentDate;
+                    return (
+                      <AccordionItem key={index} value={String(index)}>
+                        {" "}
+                        {/* Ensure unique value */}
+                        <AccordionTrigger className="cursor-pointer no-underline ">
+                          <Text as="h4" variant="headingMd">
+                            <span className="ml-2">
+                              <Badge
+                                tone={
+                                  transaction?.type === "DEBIT"
+                                    ? "critical"
+                                    : "success"
+                                }
+                              >
+                                {`${transaction?.type === "DEBIT" ? "-" : "+"}${transaction?.points}`}
+                              </Badge>
+                            </span>
+                          </Text>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <BlockStack align="space-between" gap={"200"}>
+                            <InlineGrid columns="1fr auto">
+                              <Text as="p" variant="bodyMd">
+                                <b>Expires In</b>
+                              </Text>
+                              <Text as="p" variant="bodyMd">
+                                {
+                                  // Convert time difference from milliseconds to days
+                                  Math.ceil(diffTime / (1000 * 60 * 60 * 24)) +
+                                    " days"
+                                }
+                              </Text>
+                            </InlineGrid>
+
+                            <InlineGrid columns="1fr auto">
+                              <Text as="p" variant="bodyMd">
+                                <b>Description</b>
+                              </Text>
+                              <Text as="p" variant="bodyMd">
+                                {transaction?.description}
+                              </Text>
+                            </InlineGrid>
+                            <InlineGrid columns="1fr auto">
+                              <Text as="p" variant="bodyMd">
+                                <b>Status</b>
+                              </Text>
+                              <Text as="p" variant="bodyMd">
+                                <Badge
+                                  tone={statusColorMap[transaction?.status]}
+                                >
+                                  {statusMap[transaction?.status]}
+                                </Badge>
+                              </Text>
+                            </InlineGrid>
+                            {/* <InlineGrid columns="1fr auto">
+                          <Text as="p" variant="bodyMd">
+                            <b>pointsUsed</b>
+                          </Text>
+                          <Text as="p" variant="bodyMd">
+                            {transaction?.pointsUsed}
+                          </Text>
+                        </InlineGrid> */}
+                          </BlockStack>
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })}
+                </Accordion>
+              </BlockStack>
             </Card>
           </div>
         </Layout.Section>
         <Layout.Section variant="oneThird">
           <Card>
             <BlockStack gap={"200"} align="space-between">
-              {/* <Text as="h2" variant="headingMd">
+              <Text as="h2" variant="headingMd">
                 Balance
               </Text>
-              <Text as="h2" variant="bodyMd">
-                Balance data
-              </Text>
-              <Text as="h2" variant="bodyMd">
-                Balance data
-              </Text> */}
               <BlockStack align="space-between">
-                <Text as="h1" variant="headingLg">
-                  Points: {selectedCustomer.wallet.totalPoints}
+                <Text as="h1" variant="headingXl">
+                  {selectedCustomer.wallet.totalPoints} Points
                 </Text>
               </BlockStack>
-              {/* <Button onClick={() => console.log("Redeem Points")}>
-                Redeem Points
-              </Button>
+              {/* <Text as="h2" variant="bodyMd">
+                Total Points Earned : {selectedCustomer.totalPoints}
+              </Text>
+              <Text as="h2" variant="bodyMd">
+                Total Points Redeemed : {selectedCustomer.totalPoints}
+              </Text> */}
 
-              <Button onClick={handleAdjustPoints}>Adjust Points</Button> */}
+              {/* <InlineGrid columns="1fr 1fr" gap="200">
+                <Button
+                  variant="primary"
+                  onClick={() => console.log("Redeem Points")}
+                >
+                  Redeem Points
+                </Button>
+
+                <Button onClick={handleAdjustPoints}>Adjust Points</Button>
+              </InlineGrid> */}
             </BlockStack>
           </Card>
         </Layout.Section>

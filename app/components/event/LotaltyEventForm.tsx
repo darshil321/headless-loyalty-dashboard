@@ -24,13 +24,16 @@ const LoyaltyEventForm = ({
   const tiers = useAppSelector((state) => state.tier.loyaltyTiers);
   const _eventType = useAppSelector((state) => state.event.selectedEvent);
   const eventType = isUpdate ? eventData?.event : _eventType;
-
+  const [spendingType, setSpendingType] = useState<string>(
+    eventData?.spendingType,
+  );
+  const [pointsType, setPointsType] = useState<string>(eventData?.type);
   const tierOptions = tiers?.map((tier: any) => ({
     label: tier.name,
     value: tier.id,
   }));
 
-  console.log("eventType", eventType);
+  console.log("eventType", eventData, eventType);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -48,7 +51,6 @@ const LoyaltyEventForm = ({
       points: Yup.number()
         .required("Points are required")
         .min(0, "Points must be non-negative"),
-      expiresInDays: Yup.date().required("Days is required"),
       type: Yup.string().required("Event type is required"),
       tierId: Yup.string().required("Tier is required"),
     };
@@ -62,13 +64,25 @@ const LoyaltyEventForm = ({
         maxOrderValue: Yup.number()
           .required("Maximum order value is required")
           .min(0, "Maximum order value must be non-negative"),
-        spendingLimit: Yup.number()
-          .required("Spending limit is required")
-          .min(0, "Spending limit must be non-negative"),
+
         spendingType: Yup.string().required("Spending type is required"),
       };
     }
+    if (pointsType === "CREDIT") {
+      schema = {
+        ...schema,
+        expiresInDays: Yup.number().required("Days is required"),
+      };
+    }
 
+    if (spendingType === "PERCENTAGE") {
+      schema = {
+        ...schema,
+        spendingLimit: Yup.number()
+          .required("Spending limit is required")
+          .min(0, "Spending limit must be non-negative"),
+      };
+    }
     return Yup.object(schema);
   };
 
@@ -79,7 +93,13 @@ const LoyaltyEventForm = ({
     try {
       setSubmitted(true);
       if (isUpdate) {
-        const { maxOrderValue, minOrderValue, points, spendingLimit } = values;
+        const {
+          maxOrderValue,
+          minOrderValue,
+          points,
+          spendingLimit,
+          expiresInDays,
+        } = values;
         const valuesToSend = {
           ...values,
           event: eventData.event,
@@ -95,12 +115,23 @@ const LoyaltyEventForm = ({
         if (spendingLimit) {
           valuesToSend.spendingLimit = parseInt(spendingLimit);
         }
+
+        if (!expiresInDays) {
+          valuesToSend.expiresInDays = 0;
+        }
+
         const { id, ...restValues } = valuesToSend;
         await dispatch(
           updateLoyaltyEvent({ id: eventId, loyaltyEventData: restValues }),
         );
       } else {
-        const { maxOrderValue, minOrderValue, points, spendingLimit } = values;
+        const {
+          maxOrderValue,
+          minOrderValue,
+          points,
+          spendingLimit,
+          expiresInDays,
+        } = values;
 
         const valuesToSend = {
           ...values,
@@ -108,6 +139,10 @@ const LoyaltyEventForm = ({
           points: parseInt(points),
           expiresInDays: values.expiresInDays,
         };
+
+        if (!expiresInDays) {
+          valuesToSend.expiresInDays = 0;
+        }
 
         if (minOrderValue && maxOrderValue) {
           valuesToSend.minOrderValue = parseInt(minOrderValue);
@@ -159,7 +194,7 @@ const LoyaltyEventForm = ({
       }) => (
         <FormikForm>
           <Page
-            title={isUpdate ? "Update Event" : eventType}
+            title={eventType === "SIGN_UP" ? "Sign Up" : "Order Create"}
             fullWidth
             primaryAction={{
               content: isUpdate ? "Save Event" : "Create Event",
@@ -169,7 +204,7 @@ const LoyaltyEventForm = ({
           >
             <Layout>
               <Layout.Section>
-                <Card sectioned>
+                <Card>
                   <div className="py-3">
                     <div className="grid grid-cols-4 gap-3 items-end">
                       <div className="col-span-2">
@@ -184,7 +219,7 @@ const LoyaltyEventForm = ({
                               target: { name: "tierId", value: value },
                             })
                           }
-                          error={touched.tierId && errors.tierId}
+                          error={touched.tierId && (errors.tierId as string)}
                         />
                       </div>
                       <div className="col-span-2">
@@ -197,12 +232,13 @@ const LoyaltyEventForm = ({
                             { label: "Debit", value: "DEBIT" },
                           ]}
                           value={values.type}
-                          onChange={(value) =>
+                          onChange={(value) => {
+                            setPointsType(value);
                             handleChange({
                               target: { name: "type", value: value },
-                            })
-                          }
-                          error={touched.type && errors.type}
+                            });
+                          }}
+                          error={touched.type && (errors.type as string)}
                         />
                       </div>
                     </div>
@@ -219,24 +255,31 @@ const LoyaltyEventForm = ({
                             });
                           }}
                           onBlur={handleBlur}
-                          error={touched.points && errors.points}
+                          error={touched.points && (errors.points as string)}
+                          autoComplete="on"
                         />
                       </div>
-                      <div className="col-span-2">
-                        <TextField
-                          label="Expiry In Days"
-                          type="number"
-                          name="expiresInDays"
-                          value={values.expiresInDays}
-                          onChange={(value) => {
-                            handleChange({
-                              target: { name: "expiresInDays", value: value },
-                            });
-                          }}
-                          onBlur={handleBlur}
-                          error={touched.expiresInDays && errors.expiresInDays}
-                        />
-                      </div>
+                      {pointsType === "CREDIT" && (
+                        <div className="col-span-2">
+                          <TextField
+                            label="Expiry In Days"
+                            type="number"
+                            name="expiresInDays"
+                            value={values.expiresInDays}
+                            onChange={(value) => {
+                              handleChange({
+                                target: { name: "expiresInDays", value: value },
+                              });
+                            }}
+                            min={new Date().toISOString().split("T")[0]}
+                            autoComplete="on"
+                            onBlur={handleBlur}
+                            error={
+                              touched.expiresInDays && errors.expiresInDays
+                            }
+                          />
+                        </div>
+                      )}
                     </div>
 
                     {eventType !== "SIGN_UP" && (
@@ -248,6 +291,7 @@ const LoyaltyEventForm = ({
                               type="number"
                               name="minOrderValue"
                               value={values.minOrderValue}
+                              autoComplete="on"
                               onChange={(value) => {
                                 console.log("value", value);
                                 handleChange({
@@ -259,7 +303,8 @@ const LoyaltyEventForm = ({
                               }}
                               onBlur={handleBlur}
                               error={
-                                touched.minOrderValue && errors.minOrderValue
+                                touched.minOrderValue &&
+                                (errors.minOrderValue as string)
                               }
                             />
                           </div>
@@ -267,6 +312,7 @@ const LoyaltyEventForm = ({
                             <TextField
                               label="Maximum Order Value"
                               type="number"
+                              autoComplete="on"
                               name="maxOrderValue"
                               value={values.maxOrderValue}
                               onChange={(value) => {
@@ -280,7 +326,8 @@ const LoyaltyEventForm = ({
                               }}
                               onBlur={handleBlur}
                               error={
-                                touched.maxOrderValue && errors.maxOrderValue
+                                touched.maxOrderValue &&
+                                (errors.maxOrderValue as string)
                               }
                             />
                           </div>
@@ -296,39 +343,45 @@ const LoyaltyEventForm = ({
                                 { label: "Percentage", value: "PERCENTAGE" },
                               ]}
                               value={values.spendingType}
-                              onChange={(value) =>
+                              onChange={(value) => {
+                                setSpendingType(value);
                                 handleChange({
                                   target: {
                                     name: "spendingType",
                                     value: value,
                                   },
-                                })
-                              }
+                                });
+                              }}
                               error={
-                                touched.spendingType && errors.spendingType
+                                touched.spendingType &&
+                                (errors.spendingType as string)
                               }
                             />
                           </div>
-                          <div className="col-span-2">
-                            <TextField
-                              label="Spending Limit"
-                              type="number"
-                              name="spendingLimit"
-                              value={values.spendingLimit}
-                              onChange={(value) =>
-                                handleChange({
-                                  target: {
-                                    name: "spendingLimit",
-                                    value: value,
-                                  },
-                                })
-                              }
-                              onBlur={handleBlur}
-                              error={
-                                touched.spendingLimit && errors.spendingLimit
-                              }
-                            />
-                          </div>
+                          {spendingType === "PERCENTAGE" && (
+                            <div className="col-span-2">
+                              <TextField
+                                label="Spending Limit"
+                                autoComplete="on"
+                                type="number"
+                                name="spendingLimit"
+                                value={values.spendingLimit}
+                                onChange={(value) =>
+                                  handleChange({
+                                    target: {
+                                      name: "spendingLimit",
+                                      value: value,
+                                    },
+                                  })
+                                }
+                                onBlur={handleBlur}
+                                error={
+                                  touched.spendingLimit &&
+                                  (errors.spendingLimit as string)
+                                }
+                              />
+                            </div>
+                          )}
                         </div>
                       </>
                     )}

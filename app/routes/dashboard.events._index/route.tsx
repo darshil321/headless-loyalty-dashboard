@@ -19,6 +19,16 @@ import {
 import SelectEventModal from "@/components/common/SelectEventModal";
 import { Card } from "@/components/ui/card";
 
+const PointsType: any = {
+  CREDIT: "Credit",
+  DEBIT: "Debit",
+};
+
+const EventName: any = {
+  ORDER_CREATE: "Create Order",
+  SIGN_UP: "Sign Up",
+};
+
 export default function EventIndex() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -38,28 +48,26 @@ export default function EventIndex() {
   };
 
   const handleClose = () => {
-    setActive(false); // Close the modal
+    setActive(false);
   };
 
   const handleConfirmDelete = async () => {
     console.log("Deleting tier with ID:", currentEventId);
-    // Call the deletion API or dispatch a Redux action
-    // Assume async operation:
     try {
       await dispatch(deleteLoyaltyEvent(currentEventId));
       console.log("event deleted successfully");
     } catch (error) {
       console.error("Failed to delete event:", error);
     }
-    handleClose(); // Close the modal after action
+    handleClose();
   };
 
   const rows = events?.map((event: any, index) => [
-    event.event,
-    event.type,
+    EventName[event.event],
     event.tier.name,
+    PointsType[event.type],
     event.points,
-    event.expiresInDays,
+    event.expiresInDays + " days",
     <div className="flex space-x-2" key={index}>
       <Button onClick={() => handleEdit(event.id)} icon={EditIcon} external />
       <Button
@@ -108,11 +116,11 @@ export default function EventIndex() {
                 adipisci, hic facere atque! Autem sunt sit debitis accusantium
                 sapiente, veritatis quae quibusdam?
               </div>
-              {/* <div className="w-full flex items-end justify-end">
+              <div className="w-full flex items-end justify-end">
                 <Button variant="primary" onClick={() => setIsModalOpen(true)}>
                   select
                 </Button>
-              </div> */}
+              </div>
             </BlockStack>
           </Card>
         </main>
@@ -124,10 +132,10 @@ export default function EventIndex() {
                 columnContentTypes={["text", "text", "text", "text", "text"]}
                 headings={[
                   "Name",
-                  "Type",
                   "Tier",
+                  "Type",
                   "Points",
-                  "Expiry",
+                  "Expires In",
                   "Actions",
                 ]}
                 rows={rows}

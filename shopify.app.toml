@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://better-le-obviously-pcs.trycloudflare.com"
+application_url = "https://thumbnails-discrimination-institute-coated.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_customers,read_discounts,read_orders,read_price_rules,read_produc
 
 [auth]
 redirect_urls = [
-  "https://better-le-obviously-pcs.trycloudflare.com/auth/callback",
-  "https://better-le-obviously-pcs.trycloudflare.com/auth/shopify/callback",
-  "https://better-le-obviously-pcs.trycloudflare.com/api/auth/callback"
+  "https://thumbnails-discrimination-institute-coated.trycloudflare.com/auth/callback",
+  "https://thumbnails-discrimination-institute-coated.trycloudflare.com/auth/shopify/callback",
+  "https://thumbnails-discrimination-institute-coated.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
