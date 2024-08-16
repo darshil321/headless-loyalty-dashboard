@@ -9,11 +9,9 @@ import type {
 } from "axios";
 import axios from "axios";
 import { getAppInstance } from "./appBridgeInstance";
-// import { useAppSelector } from "@/store/hooks";
-
 // Axios instance with base URL setup
 let axiosAPIInstance: AxiosInstance = axios.create({
-  baseURL: `https://9offq7b4x6.execute-api.us-east-2.amazonaws.com/v1`,
+  baseURL: "https://uhfsgsq2u6.execute-api.us-east-2.amazonaws.com/v1",
   timeout: 10000,
 });
 // Function to get the session token

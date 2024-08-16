@@ -59,7 +59,7 @@ export default function EventIndex() {
     event.type,
     event.tier.name,
     event.points,
-    new Date(event.expiryDate).toLocaleDateString(),
+    event.expiresInDays,
     <div className="flex space-x-2" key={index}>
       <Button onClick={() => handleEdit(event.id)} icon={EditIcon} external />
       <Button

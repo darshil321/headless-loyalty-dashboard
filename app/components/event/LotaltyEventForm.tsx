@@ -48,7 +48,7 @@ const LoyaltyEventForm = ({
       points: Yup.number()
         .required("Points are required")
         .min(0, "Points must be non-negative"),
-      expiryDate: Yup.date().required("Expiry date is required"),
+      expiresInDays: Yup.date().required("Days is required"),
       type: Yup.string().required("Event type is required"),
       tierId: Yup.string().required("Tier is required"),
     };
@@ -84,7 +84,7 @@ const LoyaltyEventForm = ({
           ...values,
           event: eventData.event,
           points: parseInt(points),
-          expiryDate: new Date(values.expiryDate).toISOString(),
+          expiresInDays: values.expiresInDays,
         };
 
         if (minOrderValue && maxOrderValue) {
@@ -106,7 +106,7 @@ const LoyaltyEventForm = ({
           ...values,
           event: eventType,
           points: parseInt(points),
-          expiryDate: new Date(values.expiryDate).toISOString(),
+          expiresInDays: values.expiresInDays,
         };
 
         if (minOrderValue && maxOrderValue) {
@@ -132,9 +132,7 @@ const LoyaltyEventForm = ({
     <Formik
       initialValues={{
         points: eventData?.points + 0 || 0,
-        expiryDate: eventData?.expiryDate
-          ? new Date(eventData.expiryDate).toISOString().split("T")[0]
-          : "",
+        expiresInDays: eventData?.expiresInDays || "",
         minOrderValue: eventData?.minOrderValue || null,
         maxOrderValue: eventData?.maxOrderValue || null,
         spendingLimit: eventData?.spendingLimit || null,
@@ -226,18 +224,17 @@ const LoyaltyEventForm = ({
                       </div>
                       <div className="col-span-2">
                         <TextField
-                          label="Expiry Date"
-                          type="date"
-                          name="expiryDate"
-                          value={values.expiryDate}
+                          label="Expiry In Days"
+                          type="number"
+                          name="expiresInDays"
+                          value={values.expiresInDays}
                           onChange={(value) => {
-                            console.log("value", value);
                             handleChange({
-                              target: { name: "expiryDate", value: value },
+                              target: { name: "expiresInDays", value: value },
                             });
                           }}
                           onBlur={handleBlur}
-                          error={touched.expiryDate && errors.expiryDate}
+                          error={touched.expiresInDays && errors.expiresInDays}
                         />
                       </div>
                     </div>

@@ -3,31 +3,31 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://labour-unwrap-electoral-lou.trycloudflare.com"
+application_url = "https://better-le-obviously-pcs.trycloudflare.com"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-dev_store_url = "loyalt-devx.myshopify.com"
+dev_store_url = "lo-yal-x.myshopify.com"
 include_config_on_deploy = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_discounts,read_orders,read_price_rules,read_products,write_discounts,write_orders,write_price_rules,write_products"
+scopes = "read_customers,read_discounts,read_orders,read_price_rules,read_products,write_customers,write_discounts,write_orders,write_price_rules,write_products"
 
 [auth]
 redirect_urls = [
-  "https://labour-unwrap-electoral-lou.trycloudflare.com/auth/callback",
-  "https://labour-unwrap-electoral-lou.trycloudflare.com/auth/shopify/callback",
-  "https://labour-unwrap-electoral-lou.trycloudflare.com/api/auth/callback"
+  "https://better-le-obviously-pcs.trycloudflare.com/auth/callback",
+  "https://better-le-obviously-pcs.trycloudflare.com/auth/shopify/callback",
+  "https://better-le-obviously-pcs.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-07"
 
   [[webhooks.subscriptions]]
-  topics = [ "app/uninstalled", "orders/create" ]
-  uri = "https://9offq7b4x6.execute-api.us-east-2.amazonaws.com/v1/shopify/webhook"
+  topics = [ "app/uninstalled", "customers/create", "orders/create" ]
+  uri = "https://uhfsgsq2u6.execute-api.us-east-2.amazonaws.com/v1/shopify/webhook"
 
 [pos]
 embedded = false
