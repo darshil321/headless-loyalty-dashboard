@@ -75,7 +75,7 @@ const LoyaltyEventForm = ({
       };
     }
 
-    if (spendingType === "PERCENTAGE") {
+    if (spendingType === "PERCENTAGE" && pointsType === "CREDIT") {
       schema = {
         ...schema,
         spendingLimit: Yup.number()
@@ -358,30 +358,31 @@ const LoyaltyEventForm = ({
                               }
                             />
                           </div>
-                          {spendingType === "PERCENTAGE" && (
-                            <div className="col-span-2">
-                              <TextField
-                                label="Spending Limit"
-                                autoComplete="on"
-                                type="number"
-                                name="spendingLimit"
-                                value={values.spendingLimit}
-                                onChange={(value) =>
-                                  handleChange({
-                                    target: {
-                                      name: "spendingLimit",
-                                      value: value,
-                                    },
-                                  })
-                                }
-                                onBlur={handleBlur}
-                                error={
-                                  touched.spendingLimit &&
-                                  (errors.spendingLimit as string)
-                                }
-                              />
-                            </div>
-                          )}
+                          {spendingType === "PERCENTAGE" &&
+                            pointsType === "CREDIT" && (
+                              <div className="col-span-2">
+                                <TextField
+                                  label="Spending Limit"
+                                  autoComplete="on"
+                                  type="number"
+                                  name="spendingLimit"
+                                  value={values.spendingLimit}
+                                  onChange={(value) =>
+                                    handleChange({
+                                      target: {
+                                        name: "spendingLimit",
+                                        value: value,
+                                      },
+                                    })
+                                  }
+                                  onBlur={handleBlur}
+                                  error={
+                                    touched.spendingLimit &&
+                                    (errors.spendingLimit as string)
+                                  }
+                                />
+                              </div>
+                            )}
                         </div>
                       </>
                     )}
