@@ -146,19 +146,30 @@ export default function CustomerDetails() {
                         <AccordionTrigger className="cursor-pointer no-underline ">
                           <div className="w-full flex justify-between p-2">
                             <p>{transaction?.id.substring(0, 18)}</p>
-                            <Text as="h4" variant="headingMd">
-                              <span className="ml-2">
+                            <div className="flex justify-between">
+                              <div className="mr-2">
+                                <Text as="h4" variant="headingMd">
+                                  <span className="ml-2">
+                                    <Badge
+                                      tone={
+                                        transaction?.type === "DEBIT"
+                                          ? "critical"
+                                          : "success"
+                                      }
+                                    >
+                                      {`${transaction?.type === "DEBIT" ? "-" : "+"}${transaction?.points}`}
+                                    </Badge>
+                                  </span>
+                                </Text>
+                              </div>
+                              <Text as="p" variant="bodyMd">
                                 <Badge
-                                  tone={
-                                    transaction?.type === "DEBIT"
-                                      ? "critical"
-                                      : "success"
-                                  }
+                                  tone={statusColorMap[transaction?.status]}
                                 >
-                                  {`${transaction?.type === "DEBIT" ? "-" : "+"}${transaction?.points}`}
+                                  {statusMap[transaction?.status]}
                                 </Badge>
-                              </span>
-                            </Text>
+                              </Text>
+                            </div>
                           </div>
                         </AccordionTrigger>
                         <AccordionContent>
