@@ -3,12 +3,12 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://drove-hot-gabriel-warned.trycloudflare.com"
+application_url = "https://finds-hwy-shall-calculators.trycloudflare.com"
 embedded = true
 
 [build]
 automatically_update_urls_on_dev = true
-dev_store_url = "chirag-test-devx.myshopify.com"
+dev_store_url = "darshil-devx-1.myshopify.com"
 include_config_on_deploy = true
 
 [access_scopes]
@@ -17,9 +17,9 @@ scopes = "read_customers,read_discounts,read_orders,read_price_rules,read_produc
 
 [auth]
 redirect_urls = [
-  "https://drove-hot-gabriel-warned.trycloudflare.com/auth/callback",
-  "https://drove-hot-gabriel-warned.trycloudflare.com/auth/shopify/callback",
-  "https://drove-hot-gabriel-warned.trycloudflare.com/api/auth/callback"
+  "https://finds-hwy-shall-calculators.trycloudflare.com/auth/callback",
+  "https://finds-hwy-shall-calculators.trycloudflare.com/auth/shopify/callback",
+  "https://finds-hwy-shall-calculators.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
