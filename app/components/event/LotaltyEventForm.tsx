@@ -61,9 +61,9 @@ const LoyaltyEventForm = ({
         minOrderValue: Yup.number()
           .required("Minimum order value is required")
           .min(0, "Minimum order value must be non-negative"),
-        maxOrderValue: Yup.number()
-          .required("Maximum order value is required")
-          .min(0, "Maximum order value must be non-negative"),
+        // maxOrderValue: Yup.number()
+        //   .required("Maximum order value is required")
+        //   .min(0, "Maximum order value must be non-negative"),
 
         spendingType: Yup.string().required("Spending type is required"),
       };
@@ -83,6 +83,16 @@ const LoyaltyEventForm = ({
           .min(0, "Spending limit must be non-negative"),
       };
     }
+
+    if (spendingType === "PERCENTAGE") {
+      schema = {
+        ...schema,
+        points: Yup.number()
+          .required("Points are required")
+          .min(0, "Points must be non-negative")
+          .max(100, "Points must be less than or equal to 100"),
+      };
+    }
     return Yup.object(schema);
   };
 
@@ -93,13 +103,7 @@ const LoyaltyEventForm = ({
     try {
       setSubmitted(true);
       if (isUpdate) {
-        const {
-          maxOrderValue,
-          minOrderValue,
-          points,
-          spendingLimit,
-          expiresInDays,
-        } = values;
+        const { minOrderValue, points, spendingLimit, expiresInDays } = values;
         const valuesToSend = {
           ...values,
           event: eventData.event,
@@ -107,16 +111,16 @@ const LoyaltyEventForm = ({
           expiresInDays: values.expiresInDays,
         };
 
-        if (minOrderValue && maxOrderValue) {
+        if (minOrderValue) {
           valuesToSend.minOrderValue = parseInt(minOrderValue);
-          valuesToSend.maxOrderValue = parseInt(maxOrderValue);
         }
+        valuesToSend.maxOrderValue = 0;
 
         if (spendingLimit) {
           valuesToSend.spendingLimit = parseInt(spendingLimit);
         }
 
-        if (!expiresInDays) {
+        if (!expiresInDays || pointsType === "DEBIT") {
           valuesToSend.expiresInDays = 0;
         }
 
@@ -125,13 +129,7 @@ const LoyaltyEventForm = ({
           updateLoyaltyEvent({ id: eventId, loyaltyEventData: restValues }),
         );
       } else {
-        const {
-          maxOrderValue,
-          minOrderValue,
-          points,
-          spendingLimit,
-          expiresInDays,
-        } = values;
+        const { minOrderValue, points, spendingLimit, expiresInDays } = values;
 
         const valuesToSend = {
           ...values,
@@ -140,14 +138,14 @@ const LoyaltyEventForm = ({
           expiresInDays: values.expiresInDays,
         };
 
-        if (!expiresInDays) {
+        if (!expiresInDays || pointsType === "DEBIT") {
           valuesToSend.expiresInDays = 0;
         }
 
-        if (minOrderValue && maxOrderValue) {
+        if (minOrderValue) {
           valuesToSend.minOrderValue = parseInt(minOrderValue);
-          valuesToSend.maxOrderValue = parseInt(maxOrderValue);
         }
+        valuesToSend.maxOrderValue = 0;
 
         if (spendingLimit) {
           valuesToSend.spendingLimit = parseInt(spendingLimit);
@@ -308,7 +306,7 @@ const LoyaltyEventForm = ({
                               }
                             />
                           </div>
-                          <div className="col-span-2">
+                          {/* <div className="col-span-2">
                             <TextField
                               label="Maximum Order Value"
                               type="number"
@@ -330,7 +328,7 @@ const LoyaltyEventForm = ({
                                 (errors.maxOrderValue as string)
                               }
                             />
-                          </div>
+                          </div> */}
                         </div>
                         <div className="grid grid-cols-4 gap-3 items-end mt-5">
                           <div className="col-span-2">

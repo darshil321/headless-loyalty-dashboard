@@ -66,7 +66,7 @@ export default function EventIndex() {
     EventName[event.event],
     event.tier.name,
     PointsType[event.type],
-    event.points,
+    event.points + `${event.spendingType === "PERCENTAGE" ? "%" : ""}`,
     event.expiresInDays + " days",
     <div className="flex space-x-2" key={index}>
       <Button onClick={() => handleEdit(event.id)} icon={EditIcon} external />
