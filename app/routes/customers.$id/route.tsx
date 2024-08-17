@@ -37,15 +37,17 @@ import {
 const statusMap: any = {
   NO_SPENT: "Not Used",
   PARTIALLY_SPENT: "Partially Used",
-  FULLY_SPENT: "Fully Used",
+  FULL_SPENT: "Fully Used",
   EXPIRED: "Expired",
+  DEBITED: "DEBITED",
 };
 
 const statusColorMap: any = {
   EXPIRED: "critical-strong",
   NO_SPENT: "info",
   PARTIALLY_SPENT: "magic",
-  FULLY_SPENT: "read-only",
+  FULL_SPENT: "success-strong",
+  DEBITED: "warning-strong",
 };
 
 export default function CustomerDetails() {
@@ -142,19 +144,22 @@ export default function CustomerDetails() {
                         {" "}
                         {/* Ensure unique value */}
                         <AccordionTrigger className="cursor-pointer no-underline ">
-                          <Text as="h4" variant="headingMd">
-                            <span className="ml-2">
-                              <Badge
-                                tone={
-                                  transaction?.type === "DEBIT"
-                                    ? "critical"
-                                    : "success"
-                                }
-                              >
-                                {`${transaction?.type === "DEBIT" ? "-" : "+"}${transaction?.points}`}
-                              </Badge>
-                            </span>
-                          </Text>
+                          <div className="w-full flex justify-between p-2">
+                            <p>{transaction?.id.substring(0, 18)}</p>
+                            <Text as="h4" variant="headingMd">
+                              <span className="ml-2">
+                                <Badge
+                                  tone={
+                                    transaction?.type === "DEBIT"
+                                      ? "critical"
+                                      : "success"
+                                  }
+                                >
+                                  {`${transaction?.type === "DEBIT" ? "-" : "+"}${transaction?.points}`}
+                                </Badge>
+                              </span>
+                            </Text>
+                          </div>
                         </AccordionTrigger>
                         <AccordionContent>
                           <BlockStack align="space-between" gap={"200"}>
@@ -163,11 +168,12 @@ export default function CustomerDetails() {
                                 <b>Expires In</b>
                               </Text>
                               <Text as="p" variant="bodyMd">
-                                {
-                                  // Convert time difference from milliseconds to days
-                                  Math.ceil(diffTime / (1000 * 60 * 60 * 24)) +
-                                    " days"
-                                }
+                                {transaction?.status === statusMap.DEBITED
+                                  ? 0 + " days"
+                                  : // Convert time difference from milliseconds to days
+                                    Math.ceil(
+                                      diffTime / (1000 * 60 * 60 * 24),
+                                    ) + " days"}
                               </Text>
                             </InlineGrid>
 
