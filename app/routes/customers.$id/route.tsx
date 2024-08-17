@@ -172,43 +172,44 @@ export default function CustomerDetails() {
                             </div>
                           </div>
                         </AccordionTrigger>
-                        <AccordionContent>
-                          <BlockStack align="space-between" gap={"200"}>
-                            <InlineGrid columns="1fr auto">
-                              <Text as="p" variant="bodyMd">
-                                <b>Expires In</b>
-                              </Text>
-                              <Text as="p" variant="bodyMd">
-                                {transaction?.status === statusMap.DEBITED
-                                  ? 0 + " days"
-                                  : // Convert time difference from milliseconds to days
-                                    Math.ceil(
-                                      diffTime / (1000 * 60 * 60 * 24),
-                                    ) + " days"}
-                              </Text>
-                            </InlineGrid>
+                        <div className="p-2">
+                          <AccordionContent>
+                            <BlockStack align="space-between" gap={"200"}>
+                              <InlineGrid columns="1fr auto">
+                                <Text as="p" variant="bodyMd">
+                                  <b>Expires In</b>
+                                </Text>
+                                <Text as="p" variant="bodyMd">
+                                  {transaction?.status === statusMap.DEBITED
+                                    ? 0 + " days"
+                                    : // Convert time difference from milliseconds to days
+                                      Math.ceil(
+                                        diffTime / (1000 * 60 * 60 * 24),
+                                      ) + " days"}
+                                </Text>
+                              </InlineGrid>
 
-                            <InlineGrid columns="1fr auto">
-                              <Text as="p" variant="bodyMd">
-                                <b>Description</b>
-                              </Text>
-                              <Text as="p" variant="bodyMd">
-                                {transaction?.description}
-                              </Text>
-                            </InlineGrid>
-                            <InlineGrid columns="1fr auto">
-                              <Text as="p" variant="bodyMd">
-                                <b>Status</b>
-                              </Text>
-                              <Text as="p" variant="bodyMd">
-                                <Badge
-                                  tone={statusColorMap[transaction?.status]}
-                                >
-                                  {statusMap[transaction?.status]}
-                                </Badge>
-                              </Text>
-                            </InlineGrid>
-                            {/* <InlineGrid columns="1fr auto">
+                              <InlineGrid columns="1fr auto">
+                                <Text as="p" variant="bodyMd">
+                                  <b>Description</b>
+                                </Text>
+                                <Text as="p" variant="bodyMd">
+                                  {transaction?.description}
+                                </Text>
+                              </InlineGrid>
+                              <InlineGrid columns="1fr auto">
+                                <Text as="p" variant="bodyMd">
+                                  <b>Status</b>
+                                </Text>
+                                <Text as="p" variant="bodyMd">
+                                  <Badge
+                                    tone={statusColorMap[transaction?.status]}
+                                  >
+                                    {statusMap[transaction?.status]}
+                                  </Badge>
+                                </Text>
+                              </InlineGrid>
+                              {/* <InlineGrid columns="1fr auto">
                           <Text as="p" variant="bodyMd">
                             <b>pointsUsed</b>
                           </Text>
@@ -216,8 +217,9 @@ export default function CustomerDetails() {
                             {transaction?.pointsUsed}
                           </Text>
                         </InlineGrid> */}
-                          </BlockStack>
-                        </AccordionContent>
+                            </BlockStack>
+                          </AccordionContent>
+                        </div>
                       </AccordionItem>
                     );
                   })}
