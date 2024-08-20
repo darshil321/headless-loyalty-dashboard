@@ -68,6 +68,7 @@ export default function EventIndex() {
     PointsType[event.type],
     event.points + `${event.spendingType === "PERCENTAGE" ? "%" : ""}`,
     event.expiresInDays + " days",
+    event.status === "ACTIVE" ? "Active" : "Inactive",
     <div className="flex space-x-2" key={index}>
       <Button onClick={() => handleEdit(event.id)} icon={EditIcon} external />
       <Button
@@ -129,13 +130,21 @@ export default function EventIndex() {
         <Layout.Section>
           <Card>
             <DataTable
-              columnContentTypes={["text", "text", "text", "text", "text"]}
+              columnContentTypes={[
+                "text",
+                "text",
+                "text",
+                "text",
+                "text",
+                "text",
+              ]}
               headings={[
                 "Name",
                 "Tier",
                 "Type",
                 "Points",
                 "Expires In",
+                "Status",
                 "Actions",
               ]}
               rows={rows}

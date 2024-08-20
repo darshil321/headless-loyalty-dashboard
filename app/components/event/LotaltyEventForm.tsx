@@ -33,8 +33,6 @@ const LoyaltyEventForm = ({
     value: tier.id,
   }));
 
-  console.log("eventType", eventData, eventType);
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       const storedConfig = JSON.parse(
@@ -53,6 +51,7 @@ const LoyaltyEventForm = ({
         .min(0, "Points must be non-negative"),
       type: Yup.string().required("Event type is required"),
       tierId: Yup.string().required("Tier is required"),
+      status: Yup.string().required("Status is required"),
     };
 
     if (eventType !== "SIGN_UP") {
@@ -172,6 +171,7 @@ const LoyaltyEventForm = ({
         spendingType: eventData?.spendingType || "",
         tierId: eventData?.tierId || "",
         type: eventData?.type || "",
+        status: eventData?.status || "ACTIVE",
       }}
       validationSchema={getValidationSchema()}
       onSubmit={(values, { setSubmitting, resetForm }) => {
@@ -384,6 +384,24 @@ const LoyaltyEventForm = ({
                         </div>
                       </>
                     )}
+                    <div className="mt-5">
+                      <Select
+                        label="Status"
+                        name="status"
+                        placeholder="Select status"
+                        options={[
+                          { label: "Inactive", value: "INACTIVE" },
+                          { label: "Active", value: "ACTIVE" },
+                        ]}
+                        value={values.status}
+                        onChange={(value) => {
+                          handleChange({
+                            target: { name: "status", value: value },
+                          });
+                        }}
+                        error={touched.status && errors.status}
+                      />
+                    </div>
                   </div>
                 </Card>
               </Layout.Section>
