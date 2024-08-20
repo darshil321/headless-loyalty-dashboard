@@ -1,0 +1,2 @@
+{"level":"info","message":"afterAuth","timestamp":"2024-08-20T08:32:03.174Z"}
+{"accessToken":"shpua_6dd5f611f3dcf9ac7059091df86d043a","id":"offline_nayan-dev.myshopify.com","isOnline":false,"level":"info","message":"here","scope":"write_customers,write_discounts,write_orders,write_price_rules,write_products","shop":"nayan-dev.myshopify.com","state":"","timestamp":"2024-08-20T08:32:06.025Z"}
