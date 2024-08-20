@@ -3,7 +3,7 @@ import { authenticate } from "../shopify.server";
 import { useLoaderData } from "@remix-run/react";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  console.log("hiiie in index loader 3");
+  console.log("hiiie in index loader 3 request:", request);
 
   return authenticate.admin(request);
 };

@@ -8,14 +8,13 @@ import { useAppDispatch } from "@/store/hooks";
 import { setSessionToken } from "@/store/session/sessionSlice";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  console.log("hiiie in index loader 1");
-
   await authenticate.admin(request);
 
   return null;
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
+  console.log("hiiie in index action 2", request);
   await authenticate.admin(request);
 };
 
