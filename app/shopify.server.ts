@@ -7,6 +7,23 @@ import {
 import { PrismaSessionStorage } from "@shopify/shopify-app-session-storage-prisma";
 import { restResources } from "@shopify/shopify-api/rest/admin/2024-07";
 import prisma from "./db.server";
+import axios from "axios";
+import winston from "winston";
+
+console.log("in shopify.server.ts", process.env.BACKEND_URL);
+
+// Set up Winston logger
+const logger = winston.createLogger({
+  level: "info",
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json(),
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: "app.log" }),
+  ],
+});
 
 const shopify = shopifyApp({
   apiKey: process.env.SHOPIFY_API_KEY,
@@ -18,6 +35,29 @@ const shopify = shopifyApp({
   sessionStorage: new PrismaSessionStorage(prisma),
   distribution: AppDistribution.AppStore,
   restResources,
+  hooks: {
+    afterAuth: async ({ session }) => {
+      const accessToken = session.accessToken;
+      console.log("accessTokensss", accessToken);
+      if (!accessToken) {
+        return;
+      }
+
+      logger.info("afterAuth");
+      try {
+        await axios.post(
+          process.env.BACKEND_URL + "/shopify/app-integration" || "",
+          {
+            accessToken: session.accessToken,
+            store: session.shop,
+          },
+        );
+        logger.info("here", session);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  },
   future: {
     unstable_newEmbeddedAuthStrategy: true,
   },
@@ -27,6 +67,7 @@ const shopify = shopifyApp({
 });
 
 export default shopify;
+
 export const apiVersion = ApiVersion.July24;
 export const addDocumentResponseHeaders = shopify.addDocumentResponseHeaders;
 export const authenticate = shopify.authenticate;
