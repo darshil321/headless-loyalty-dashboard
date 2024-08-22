@@ -2,3 +2,7 @@
 {"accessToken":"shpua_6dd5f611f3dcf9ac7059091df86d043a","id":"offline_nayan-dev.myshopify.com","isOnline":false,"level":"info","message":"here","scope":"write_customers,write_discounts,write_orders,write_price_rules,write_products","shop":"nayan-dev.myshopify.com","state":"","timestamp":"2024-08-20T08:32:06.025Z"}
 {"level":"info","message":"afterAuth","timestamp":"2024-08-21T13:01:42.871Z"}
 {"level":"info","message":"afterAuth","timestamp":"2024-08-21T13:10:04.384Z"}
+{"level":"info","message":"afterAuth","timestamp":"2024-08-22T10:03:19.748Z"}
+{"accessToken":"shpua_06526cb3787909fd2a12212e0763d838","id":"offline_akshay-fass-thy-gyo-demo.myshopify.com","isOnline":false,"level":"info","message":"here","scope":"write_customers,write_discounts,write_orders,write_price_rules,write_products","shop":"akshay-fass-thy-gyo-demo.myshopify.com","state":"","timestamp":"2024-08-22T10:03:23.234Z"}
+{"level":"info","message":"afterAuth","timestamp":"2024-08-22T10:54:29.092Z"}
+{"accessToken":"shpua_005224af8041072a95c1cb271287f8e9","id":"offline_dhruv-parekh-demo.myshopify.com","isOnline":false,"level":"info","message":"here","scope":"write_customers,write_discounts,write_orders,write_price_rules,write_products","shop":"dhruv-parekh-demo.myshopify.com","state":"","timestamp":"2024-08-22T10:54:32.029Z"}

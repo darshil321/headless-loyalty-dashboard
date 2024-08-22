@@ -25,6 +25,7 @@ const validationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
   description: Yup.string().required("Description is required"),
   status: Yup.string().required("Status is required"),
+  conversionValue: Yup.number().required("Conversion value is required"),
   // default: Yup.boolean(),
   rules: Yup.array().of(
     Yup.object({
@@ -107,13 +108,19 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
     console.log("values", values);
     try {
       setSubmitted(!submitted);
+      const conversionValue = parseInt(values.conversionValue, 10) || 0;
       if (isUpdate) {
         const { id, ...restValues } = values;
-        const _values = { loyaltyTier: restValues, id: tierData.id };
-        await dispatch(updateLoyaltyTier(_values)); // Dispatch update action
+
+        const _values = {
+          loyaltyTier: { ...restValues, conversionValue },
+          id: tierData.id,
+        };
+        await dispatch(updateLoyaltyTier(_values));
       } else {
         values.default = false;
-        await dispatch(createLoyaltyTier(values)); // Dispatch create action
+        values.conversionValue = parseInt(values.conversionValue, 10) || 0;
+        await dispatch(createLoyaltyTier(values));
       }
       navigate("/tiers");
     } catch (error: any) {
@@ -127,6 +134,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
         name: tierData?.name || "",
         description: tierData?.description || "",
         status: tierData?.status || "inactive",
+        conversionValue: (tierData?.conversionValue as number) || 0,
         // default: tierData?.default || false,
         rules: tierData?.rules || [{ ruleType: "", operator: "", value: "0" }],
         benefits: tierData?.benefits || [
@@ -136,6 +144,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
       validationSchema={validationSchema}
       onSubmit={async (values, { setSubmitting, resetForm }) => {
         console.log("values", values);
+
         await submitTierData(values);
         setSubmitting(false);
         resetForm();
@@ -165,6 +174,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                 <Card>
                   <div>
                     <PolarisTextField
+                      autoComplete="off"
                       label="Name"
                       name="name"
                       value={values.name}
@@ -177,11 +187,12 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                         })
                       }
                       onBlur={handleBlur}
-                      error={touched.name && errors.name}
+                      error={touched.name && (errors.name as string)}
                     />
                   </div>
                   <div className="mt-5">
                     <PolarisTextField
+                      autoComplete="off"
                       label="Description"
                       multiline={4}
                       name="description"
@@ -195,9 +206,28 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                         })
                       }
                       onBlur={handleBlur}
-                      error={touched.description && errors.description}
+                      error={
+                        touched.description && (errors.description as string)
+                      }
                     />
                   </div>
+                  <div className="mt-5">
+                    <PolarisTextField
+                      autoComplete="off"
+                      label="Conversion Value"
+                      name="conversionValue"
+                      type="number"
+                      placeholder="Enter value"
+                      value={values.conversionValue}
+                      onChange={(value) => {
+                        handleChange({
+                          target: { name: "conversionValue", value: value },
+                        });
+                      }}
+                      error={touched.status && (errors.status as string)}
+                    />
+                  </div>
+
                   <div className="mt-5">
                     <PolarisSelect
                       disabled={!isUpdate}
@@ -214,9 +244,10 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                           target: { name: "status", value: value },
                         });
                       }}
-                      error={touched.status && errors.status}
+                      error={touched.status && (errors.status as string)}
                     />
                   </div>
+
                   {/* <div className="mt-5">
                     <Checkbox
                       label="Default"
@@ -256,7 +287,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                   }}
                                   error={
                                     touched.rules?.[index]?.ruleType &&
-                                    errors.rules?.[index]?.ruleType
+                                    (errors.rules?.[index]?.ruleType as string)
                                   }
                                 />
                               </div>
@@ -365,6 +396,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                 </div>
                                 <div className="col-span-2">
                                   <PolarisTextField
+                                    autoComplete="off"
                                     label="Description"
                                     name={`benefits[${index}].description`}
                                     value={values.benefits[index].description}
@@ -410,6 +442,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                                 </div>
                                 <div className="col-span-2">
                                   <PolarisTextField
+                                    autoComplete="off"
                                     label="Value"
                                     name={`benefits[${index}].value`}
                                     type="number"

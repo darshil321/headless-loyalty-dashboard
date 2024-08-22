@@ -66,9 +66,9 @@ export default function CustomerDetails() {
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const handleAdjustPoints = () => {
-    setShowDialog(true);
-  };
+  // const handleAdjustPoints = () => {
+  //   setShowDialog(true);
+  // };
 
   const handleCreateEvent = () => {
     // Implement logic to create a new event

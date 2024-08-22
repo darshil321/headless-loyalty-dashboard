@@ -41,9 +41,7 @@ const LoyaltyEventForm = ({
       );
       const { host } = storedConfig;
       setupAxiosInterceptors(host);
-      if ((tiers.length = 0)) {
-        dispatch(getAllLoyaltyTiers());
-      }
+      dispatch(getAllLoyaltyTiers());
     }
   }, [submitted, dispatch, tiers]);
 
