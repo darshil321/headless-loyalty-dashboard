@@ -9,9 +9,11 @@ import type {
 } from "axios";
 import axios from "axios";
 import { getAppInstance } from "./appBridgeInstance";
+
+console.log("cccc", import.meta.env.BACKEND_URL);
 // Axios instance with base URL setup
 let axiosAPIInstance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.BACKEND_URL,
+  baseURL: "https://ub8x9415tg.execute-api.us-east-2.amazonaws.com/v1",
   timeout: 10000,
 });
 // Function to get the session token
