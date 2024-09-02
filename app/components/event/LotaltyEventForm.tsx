@@ -27,6 +27,7 @@ const LoyaltyEventForm = ({
   const [spendingType, setSpendingType] = useState<string>(
     eventData?.spendingType,
   );
+
   const [pointsType, setPointsType] = useState<string>(eventData?.type);
   const tierOptions = tiers?.map((tier: any) => ({
     label: tier.name,
@@ -42,7 +43,7 @@ const LoyaltyEventForm = ({
       setupAxiosInterceptors(host);
       dispatch(getAllLoyaltyTiers());
     }
-  }, [submitted]);
+  }, [submitted, dispatch, tiers]);
 
   const getValidationSchema = () => {
     let schema: any = {
@@ -279,7 +280,8 @@ const LoyaltyEventForm = ({
                             autoComplete="on"
                             onBlur={handleBlur}
                             error={
-                              touched.expiresInDays && errors.expiresInDays
+                              touched.expiresInDays &&
+                              (errors.expiresInDays as string)
                             }
                           />
                         </div>
@@ -404,7 +406,7 @@ const LoyaltyEventForm = ({
                             target: { name: "status", value: value },
                           });
                         }}
-                        error={touched.status && errors.status}
+                        error={touched.status && (errors.status as string)}
                       />
                     </div>
                   </div>

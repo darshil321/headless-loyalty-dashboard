@@ -21,6 +21,7 @@ export default function TiersIndex() {
   const dispatch = useAppDispatch();
   const [active, setActive] = useState(false);
   const [currentTierId, setCurrentTierId] = useState("");
+  const [isDataFetched, setIsDataFetched] = useState(false);
 
   const tiers = useAppSelector((state) => state.tier.loyaltyTiers);
 
@@ -39,15 +40,13 @@ export default function TiersIndex() {
 
   const handleConfirmDelete = async () => {
     console.log("Deleting tier with ID:", currentTierId);
-    // Call the deletion API or dispatch a Redux action
-    // Assume async operation:
     try {
       await dispatch(deleteLoyaltyTier(currentTierId));
       console.log("Tier deleted successfully");
     } catch (error) {
       console.error("Failed to delete tier:", error);
     }
-    handleClose(); // Close the modal after action
+    handleClose();
   };
 
   const { selectedResources, allResourcesSelected, handleSelectionChange } =
@@ -93,16 +92,21 @@ export default function TiersIndex() {
   };
 
   useEffect(() => {
-    // Ensure sessionStorage is accessed only client-side
-    if (typeof window !== "undefined") {
-      const storedConfig = JSON.parse(
-        sessionStorage.getItem("app-bridge-config") || "{}",
-      );
-      const { host } = storedConfig;
-      setupAxiosInterceptors(host);
-      dispatch(getAllLoyaltyTiers());
+    if (!isDataFetched) {
+      if (typeof window !== "undefined") {
+        const storedConfig = JSON.parse(
+          sessionStorage.getItem("app-bridge-config") || "{}",
+        );
+        const { host } = storedConfig;
+
+        if (host) {
+          setupAxiosInterceptors(host);
+          setIsDataFetched(true);
+        }
+        dispatch(getAllLoyaltyTiers());
+      }
     }
-  }, []);
+  }, [dispatch, isDataFetched]);
 
   return (
     <Page
