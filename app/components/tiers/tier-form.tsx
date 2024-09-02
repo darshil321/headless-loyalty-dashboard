@@ -104,7 +104,6 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
   const navigate = useNavigate();
 
   const submitTierData = async (values: any) => {
-    console.log("values", values);
     try {
       setSubmitted(!submitted);
       if (isUpdate) {
@@ -153,11 +152,14 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
       }) => (
         <FormikForm>
           <Page
-            title="Tiers"
+            title={tierData ? "Edit Tier" : "Create Tier"}
             primaryAction={{
               content: tierData ? "Save Tier" : "Create Tier",
               onAction: handleSubmit,
               loading: isSubmitting,
+            }}
+            backAction={{
+              onAction: () => navigate("/tiers"),
             }}
           >
             <Layout>

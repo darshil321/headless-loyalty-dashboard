@@ -1,5 +1,15 @@
 import { useNavigate } from "@remix-run/react";
-import { Card, Layout, Page, DataTable, Button, Modal } from "@shopify/polaris";
+import {
+  Card,
+  Layout,
+  Page,
+  Button,
+  Modal,
+  IndexTable,
+  useIndexResourceState,
+  Text,
+  useBreakpoints,
+} from "@shopify/polaris";
 import { useEffect, useState } from "react";
 import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -40,19 +50,47 @@ export default function TiersIndex() {
     handleClose(); // Close the modal after action
   };
 
-  const rows = tiers?.map((tier: any, index) => [
-    tier.name,
-    tier.default === true ? "Default" : "Custom",
-    tier.status,
-    <div className="flex space-x-2" key={index}>
-      <Button onClick={() => handleEdit(tier.id)} icon={EditIcon} external />
-      <Button
-        onClick={() => handleDelete(tier.id)}
-        icon={DeleteIcon}
-        external
-      />
-    </div>,
-  ]);
+  const { selectedResources, allResourcesSelected, handleSelectionChange } =
+    useIndexResourceState(tiers || []);
+  const loading = useAppSelector((state) => state.tier.loading);
+
+  const rowMarkup = tiers?.map((tier: any, index) => (
+    <IndexTable.Row
+      id={tier.id}
+      key={tier.id}
+      selected={selectedResources.includes(tier.id)}
+      position={index}
+    >
+      <IndexTable.Cell>
+        <Text variant="bodyMd" fontWeight="bold" as="span">
+          {tier?.name}
+        </Text>
+      </IndexTable.Cell>
+      <IndexTable.Cell>
+        {tier.default === true ? "Default" : "Custom"}
+      </IndexTable.Cell>
+      <IndexTable.Cell>{tier.status}</IndexTable.Cell>
+      <IndexTable.Cell>
+        <div className="flex space-x-2" key={index}>
+          <Button
+            onClick={() => handleEdit(tier.id)}
+            icon={EditIcon}
+            external
+          />
+          <Button
+            onClick={() => handleDelete(tier.id)}
+            icon={DeleteIcon}
+            external
+          />
+        </div>
+      </IndexTable.Cell>
+    </IndexTable.Row>
+  ));
+
+  const resourceName = {
+    singular: "tier",
+    plural: "tiers",
+  };
 
   useEffect(() => {
     // Ensure sessionStorage is accessed only client-side
@@ -77,14 +115,27 @@ export default function TiersIndex() {
       <Layout>
         <Layout.Section>
           <Card>
-            <DataTable
-              columnContentTypes={["text", "text", "text", "text"]}
-              headings={["Name", "Type", "Status", "Actions"]}
-              rows={rows}
-              showTotalsInFooter={true}
-              sortable={[false, false, true, false]}
-            />
+            <IndexTable
+              condensed={useBreakpoints().smDown}
+              resourceName={resourceName}
+              itemCount={tiers.length}
+              selectedItemsCount={
+                allResourcesSelected ? "All" : selectedResources.length
+              }
+              onSelectionChange={handleSelectionChange}
+              headings={[
+                { title: "User Id" },
+                { title: "Points" },
+                { title: "Tier" },
+                { title: "Actions" },
+              ]}
+              loading={loading}
+              pagination={{ hasPrevious: false, hasNext: false }}
+            >
+              {rowMarkup}
+            </IndexTable>
           </Card>
+
           <Modal
             open={active}
             onClose={handleClose}

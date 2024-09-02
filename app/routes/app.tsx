@@ -3,8 +3,9 @@ import { json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData, useRouteError } from "@remix-run/react";
 import { boundary } from "@shopify/shopify-app-remix/server";
 import { AppProvider } from "@shopify/shopify-app-remix/react";
-import { NavMenu } from "@shopify/app-bridge-react";
+import { NavMenu, useAppBridge } from "@shopify/app-bridge-react";
 import polarisStyles from "@shopify/polaris/build/esm/styles.css?url";
+import { Redirect } from "@shopify/app-bridge/actions";
 
 import { authenticate } from "../shopify.server";
 
@@ -20,7 +21,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
 export default function App() {
   const { apiKey } = useLoaderData<typeof loader>();
-  console.log("apiKedddy", apiKey);
+  const app: any = useAppBridge();
+
+  const handleNavigation = (path: string) => {
+    const redirect = Redirect.create(app);
+    redirect.dispatch(Redirect.Action.APP, path);
+  };
 
   return (
     <AppProvider isEmbeddedApp apiKey={apiKey}>
@@ -28,10 +34,21 @@ export default function App() {
         <Link to="/app" rel="home">
           Home
         </Link>
-        <Link to="/tiers">Tiers</Link>
-        <Link to="/dashboard/events">Events</Link>
-        <Link to="/customers">Customers</Link>
-        <Link to="/settings">Settings</Link>
+        <Link to="/tiers" onClick={() => handleNavigation("/tiers")}>
+          Tiers
+        </Link>
+        <Link
+          to="/dashboard/events"
+          onClick={() => handleNavigation("/dashboard/events")}
+        >
+          Events
+        </Link>
+        <Link to="/customers" onClick={() => handleNavigation("/customers")}>
+          Customers
+        </Link>
+        <Link to="/settings" onClick={() => handleNavigation("/settings")}>
+          Settings
+        </Link>
       </NavMenu>
       <Outlet />
     </AppProvider>

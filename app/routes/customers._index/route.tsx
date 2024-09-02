@@ -3,17 +3,15 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { getAllLoyaltyUsers } from "@/store/user/userSlice";
 import { useNavigate } from "@remix-run/react";
 import {
-  Button,
-  LegacyCard,
   IndexTable,
   Text,
   useIndexResourceState,
   Page,
   Layout,
   useBreakpoints,
+  Card,
 } from "@shopify/polaris";
 import { useEffect } from "react";
-import { ViewIcon } from "@shopify/polaris-icons";
 
 export default function CustomersTable() {
   const navigate = useNavigate();
@@ -42,19 +40,21 @@ export default function CustomersTable() {
       position={index}
     >
       <IndexTable.Cell>
-        <Text variant="bodyMd" fontWeight="bold" as="span">
-          {user?.userId}
-        </Text>
+        <div onClick={() => handleDetail(user.id, user.userId)}>
+          <Text variant="bodyMd" fontWeight="bold" as="span">
+            {user?.userId}
+          </Text>
+        </div>
       </IndexTable.Cell>
       <IndexTable.Cell>{user.totalPoints}</IndexTable.Cell>
       <IndexTable.Cell>{user.tier.name}</IndexTable.Cell>
-      <IndexTable.Cell>
+      {/* <IndexTable.Cell>
         <Button
           onClick={() => handleDetail(user.id, user.userId)}
           icon={ViewIcon}
           external
         />
-      </IndexTable.Cell>
+      </IndexTable.Cell> */}
     </IndexTable.Row>
   ));
 
@@ -73,7 +73,7 @@ export default function CustomersTable() {
     <Page title="Customers">
       <Layout>
         <Layout.Section>
-          <LegacyCard>
+          <Card>
             <IndexTable
               condensed={useBreakpoints().smDown}
               resourceName={resourceName}
@@ -86,13 +86,13 @@ export default function CustomersTable() {
                 { title: "User Id" },
                 { title: "Points" },
                 { title: "Tier" },
-                { title: "Actions" },
               ]}
               loading={loading}
+              pagination={{ hasPrevious: false, hasNext: false }}
             >
               {rowMarkup}
             </IndexTable>
-          </LegacyCard>
+          </Card>
         </Layout.Section>
       </Layout>
     </Page>

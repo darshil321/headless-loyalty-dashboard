@@ -19,7 +19,7 @@ export enum eventTypeOptionsEnum {
 export const eventTypeOptions = [
   { label: "Select an option", value: "" },
   { label: "Order Create", value: eventTypeOptionsEnum.ORDER_CREATE },
-  { label: "Sign UP", value: eventTypeOptionsEnum.SIGN_UP },
+  // { label: "Sign UP", value: eventTypeOptionsEnum.SIGN_UP },
 ];
 
 export interface EventState {

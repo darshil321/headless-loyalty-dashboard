@@ -2,10 +2,11 @@ import { useNavigate } from "@remix-run/react";
 import {
   Layout,
   Page,
-  DataTable,
   Button,
   Modal,
-  BlockStack,
+  IndexTable,
+  useBreakpoints,
+  useIndexResourceState,
   Text,
 } from "@shopify/polaris";
 import { useEffect, useState } from "react";
@@ -37,6 +38,7 @@ export default function EventIndex() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const events = useAppSelector((state) => state.event.loyaltyEvents);
+  const loading = useAppSelector((state) => state.event.loading);
 
   const handleDelete = (id: string) => {
     setActive(true);
@@ -62,22 +64,55 @@ export default function EventIndex() {
     handleClose();
   };
 
-  const rows = events?.map((event: any, index) => [
-    EventName[event.event],
-    event.tier.name,
-    PointsType[event.type],
-    event.points + `${event.spendingType === "PERCENTAGE" ? "%" : ""}`,
-    event.expiresInDays + " days",
-    event.status === "ACTIVE" ? "Active" : "Inactive",
-    <div className="flex space-x-2" key={index}>
-      <Button onClick={() => handleEdit(event.id)} icon={EditIcon} external />
-      <Button
-        onClick={() => handleDelete(event.id)}
-        icon={DeleteIcon}
-        external
-      />
-    </div>,
-  ]);
+  const { selectedResources, allResourcesSelected, handleSelectionChange } =
+    useIndexResourceState(events || []);
+
+  const rowMarkup = events?.map((event: any, index) => (
+    <IndexTable.Row
+      id={event.id}
+      key={event.id}
+      selected={selectedResources.includes(event.id)}
+      position={index}
+    >
+      <IndexTable.Cell>
+        <Text variant="bodyMd" fontWeight="bold" as="span">
+          {EventName[event.event]}
+        </Text>
+      </IndexTable.Cell>
+      <IndexTable.Cell>{event.tier.name}</IndexTable.Cell>
+      <IndexTable.Cell>{PointsType[event.type]}</IndexTable.Cell>
+      <IndexTable.Cell>
+        {event.points + `${event.spendingType === "PERCENTAGE" ? "%" : ""}`}
+      </IndexTable.Cell>
+      <IndexTable.Cell>{event.expiresInDays + " days"}</IndexTable.Cell>
+      <IndexTable.Cell>
+        {event.status === "ACTIVE" ? "Active" : "Inactive"}
+      </IndexTable.Cell>
+      <IndexTable.Cell>
+        {
+          <div className="flex space-x-2" key={index}>
+            <Button
+              onClick={() => handleEdit(event.id)}
+              icon={EditIcon}
+              external
+            />
+            {event.event !== "SIGN_UP" && (
+              <Button
+                onClick={() => handleDelete(event.id)}
+                icon={DeleteIcon}
+                external
+              />
+            )}
+          </div>
+        }
+      </IndexTable.Cell>
+    </IndexTable.Row>
+  ));
+
+  const resourceName = {
+    singular: "event",
+    plural: "events",
+  };
 
   useEffect(() => {
     // Ensure sessionStorage is accessed only client-side
@@ -102,55 +137,31 @@ export default function EventIndex() {
         },
       }}
     >
-      {/* {events?.length === 0 ? ( */}
-      {/* // <main>
-        //   <Card className="p-4">
-        //     <BlockStack gap={"400"}>
-        //       <BlockStack gap={"300"}>
-        //         <Text variant="headingMd" as="h2">
-        //           Define Events
-        //         </Text>
-        //       </BlockStack>
-        //       <div className="text-start mb-2">
-        //         Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dolor
-        //         iusto consequuntur velit deserunt eius ipsam officia, quod,
-        //         adipisci, hic facere atque! Autem sunt sit debitis accusantium
-        //         sapiente, veritatis quae quibusdam?
-        //       </div>
-        //       <div className="w-full flex items-end justify-end">
-        //         <Button variant="primary" onClick={() => setIsModalOpen(true)}>
-        //           select
-        //         </Button>
-        //       </div>
-        //     </BlockStack>
-        //   </Card>
-        // </main>
-      // ) : ( */}
       <Layout>
         <Layout.Section>
           <Card>
-            <DataTable
-              columnContentTypes={[
-                "text",
-                "text",
-                "text",
-                "text",
-                "text",
-                "text",
-              ]}
+            <IndexTable
+              condensed={useBreakpoints().smDown}
+              resourceName={resourceName}
+              itemCount={events.length}
+              selectedItemsCount={
+                allResourcesSelected ? "All" : selectedResources.length
+              }
+              onSelectionChange={handleSelectionChange}
               headings={[
-                "Name",
-                "Tier",
-                "Type",
-                "Points",
-                "Expires In",
-                "Status",
-                "Actions",
+                { title: "Name" },
+                { title: "Tier" },
+                { title: "Type" },
+                { title: "Value" },
+                { title: "Expires In" },
+                { title: "Status" },
+                { title: "Actions" },
               ]}
-              rows={rows}
-              showTotalsInFooter={true}
-              sortable={[false, false, true, false]}
-            />
+              loading={loading}
+              pagination={{ hasPrevious: false, hasNext: false }}
+            >
+              {rowMarkup}
+            </IndexTable>
           </Card>
           <Modal
             open={active}
@@ -174,7 +185,6 @@ export default function EventIndex() {
           </Modal>
         </Layout.Section>
       </Layout>
-      {/* )} */}
       <SelectEventModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}

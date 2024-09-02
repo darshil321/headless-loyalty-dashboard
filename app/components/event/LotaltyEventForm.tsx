@@ -57,9 +57,12 @@ const LoyaltyEventForm = ({
     if (eventType !== "SIGN_UP") {
       schema = {
         ...schema,
-        minOrderValue: Yup.number()
-          .required("Minimum order value is required")
-          .min(0, "Minimum order value must be non-negative"),
+        minOrderValue: Yup.number().min(
+          0,
+          "Minimum order value must be non-negative",
+        ),
+        // .required("Minimum order value is required")
+
         // maxOrderValue: Yup.number()
         //   .required("Maximum order value is required")
         //   .min(0, "Maximum order value must be non-negative"),
@@ -74,7 +77,7 @@ const LoyaltyEventForm = ({
       };
     }
 
-    if (spendingType === "PERCENTAGE" && pointsType === "CREDIT") {
+    if (spendingType === "PERCENTAGE") {
       schema = {
         ...schema,
         spendingLimit: Yup.number()
@@ -113,7 +116,6 @@ const LoyaltyEventForm = ({
         if (minOrderValue) {
           valuesToSend.minOrderValue = parseInt(minOrderValue);
         }
-        valuesToSend.maxOrderValue = 0;
 
         if (spendingLimit) {
           valuesToSend.spendingLimit = parseInt(spendingLimit);
@@ -135,6 +137,8 @@ const LoyaltyEventForm = ({
           event: eventType,
           points: parseInt(points),
           expiresInDays: values.expiresInDays,
+          minOrderValue: 0,
+          maxOrderValue: 0,
         };
 
         if (!expiresInDays || pointsType === "DEBIT") {
@@ -144,7 +148,6 @@ const LoyaltyEventForm = ({
         if (minOrderValue) {
           valuesToSend.minOrderValue = parseInt(minOrderValue);
         }
-        valuesToSend.maxOrderValue = 0;
 
         if (spendingLimit) {
           valuesToSend.spendingLimit = parseInt(spendingLimit);
@@ -198,6 +201,9 @@ const LoyaltyEventForm = ({
               content: isUpdate ? "Save Event" : "Create Event",
               onAction: handleSubmit,
               loading: isSubmitting,
+            }}
+            backAction={{
+              onAction: () => navigate("/dashboard/events"),
             }}
           >
             <Layout>
@@ -356,31 +362,30 @@ const LoyaltyEventForm = ({
                               }
                             />
                           </div>
-                          {spendingType === "PERCENTAGE" &&
-                            pointsType === "CREDIT" && (
-                              <div className="col-span-2">
-                                <TextField
-                                  label="Spending Limit"
-                                  autoComplete="on"
-                                  type="number"
-                                  name="spendingLimit"
-                                  value={values.spendingLimit}
-                                  onChange={(value) =>
-                                    handleChange({
-                                      target: {
-                                        name: "spendingLimit",
-                                        value: value,
-                                      },
-                                    })
-                                  }
-                                  onBlur={handleBlur}
-                                  error={
-                                    touched.spendingLimit &&
-                                    (errors.spendingLimit as string)
-                                  }
-                                />
-                              </div>
-                            )}
+                          {spendingType === "PERCENTAGE" && (
+                            <div className="col-span-2">
+                              <TextField
+                                label="Spending Limit"
+                                autoComplete="on"
+                                type="number"
+                                name="spendingLimit"
+                                value={values.spendingLimit}
+                                onChange={(value) =>
+                                  handleChange({
+                                    target: {
+                                      name: "spendingLimit",
+                                      value: value,
+                                    },
+                                  })
+                                }
+                                onBlur={handleBlur}
+                                error={
+                                  touched.spendingLimit &&
+                                  (errors.spendingLimit as string)
+                                }
+                              />
+                            </div>
+                          )}
                         </div>
                       </>
                     )}

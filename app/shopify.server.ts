@@ -10,8 +10,6 @@ import prisma from "./db.server";
 import axios from "axios";
 import winston from "winston";
 
-console.log("in shopify.server.ts", process.env.BACKEND_URL);
-
 // Set up Winston logger
 const logger = winston.createLogger({
   level: "info",
@@ -33,7 +31,7 @@ const shopify = shopifyApp({
   appUrl: process.env.SHOPIFY_APP_URL || "",
   authPathPrefix: "/auth",
   sessionStorage: new PrismaSessionStorage(prisma),
-  distribution: AppDistribution.AppStore,
+  distribution: AppDistribution.SingleMerchant,
   restResources,
   hooks: {
     afterAuth: async ({ session }) => {

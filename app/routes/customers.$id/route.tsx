@@ -3,7 +3,6 @@ import {
   Layout,
   Card,
   Text,
-  Button,
   Badge,
   InlineGrid,
   BlockStack,
@@ -66,10 +65,6 @@ export default function CustomerDetails() {
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const handleAdjustPoints = () => {
-    setShowDialog(true);
-  };
-
   const handleCreateEvent = () => {
     // Implement logic to create a new event
     setShowDialog(false);
@@ -101,14 +96,20 @@ export default function CustomerDetails() {
   }
 
   return (
-    <Page>
+    <Page
+      title="Customer Details"
+      backAction={{
+        content: "Back",
+        onAction: () => navigate("/customers"),
+      }}
+    >
       <Layout>
         <Layout.Section>
           <Card>
             <BlockStack gap={"600"} align="space-between">
               <BlockStack gap={"300"} align="space-between">
                 <Text as="h2" variant="headingLg">
-                  Customer overview
+                  Overview
                 </Text>
               </BlockStack>
               <BlockStack gap={"200"} align="space-between">
