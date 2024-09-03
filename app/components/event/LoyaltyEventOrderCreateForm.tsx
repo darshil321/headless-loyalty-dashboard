@@ -11,7 +11,7 @@ import {
 } from "@/store/event/eventSlice";
 import { getAllLoyaltyTiers } from "@/store/tier/tierSlice";
 
-const LoyaltyEventForm = ({
+const LoyaltyEventOrderCreateForm = ({
   eventData,
   isUpdate,
 }: {
@@ -55,17 +55,15 @@ const LoyaltyEventForm = ({
       status: Yup.string().required("Status is required"),
     };
 
-    if (eventType !== "SIGN_UP") {
-      schema = {
-        ...schema,
-        minOrderValue: Yup.number().min(
-          0,
-          "Minimum order value must be non-negative",
-        ),
+    schema = {
+      ...schema,
+      minOrderValue: Yup.number()
+        .min(0, "Minimum order value must be non-negative")
+        .notRequired(),
 
-        spendingType: Yup.string().required("Spending type is required"),
-      };
-    }
+      spendingType: Yup.string().required("Spending type is required"),
+    };
+
     if (pointsType === "CREDIT") {
       schema = {
         ...schema,
@@ -191,7 +189,7 @@ const LoyaltyEventForm = ({
       }) => (
         <FormikForm>
           <Page
-            title={eventType === "SIGN_UP" ? "Sign Up" : "Order Create"}
+            title={"Order Create"}
             fullWidth
             primaryAction={{
               content: isUpdate ? "Save Event" : "Create Event",
@@ -244,6 +242,31 @@ const LoyaltyEventForm = ({
                     </div>
                     <div className="grid grid-cols-4 gap-3 items-end mt-5">
                       <div className="col-span-2">
+                        <Select
+                          label="Spending Type"
+                          name="spendingType"
+                          placeholder="Select Type"
+                          options={[
+                            { label: "Fixed", value: "FIXED" },
+                            { label: "Percentage", value: "PERCENTAGE" },
+                          ]}
+                          value={values.spendingType}
+                          onChange={(value) => {
+                            setSpendingType(value);
+                            handleChange({
+                              target: {
+                                name: "spendingType",
+                                value: value,
+                              },
+                            });
+                          }}
+                          error={
+                            touched.spendingType &&
+                            (errors.spendingType as string)
+                          }
+                        />
+                      </div>
+                      <div className="col-span-2">
                         <TextField
                           label="Value (Fixed or Percentage)"
                           type="number"
@@ -259,151 +282,105 @@ const LoyaltyEventForm = ({
                           autoComplete="on"
                         />
                       </div>
-                      {pointsType === "CREDIT" && (
+                    </div>
+
+                    <>
+                      <div className="grid grid-cols-4 gap-3 items-end mt-5">
                         <div className="col-span-2">
                           <TextField
-                            label="Expiry In Days"
+                            label="Minimum Order Value"
                             type="number"
-                            name="expiresInDays"
-                            value={values.expiresInDays}
+                            name="minOrderValue"
+                            value={values.minOrderValue}
+                            autoComplete="on"
                             onChange={(value) => {
+                              console.log("value", value);
                               handleChange({
-                                target: { name: "expiresInDays", value: value },
+                                target: {
+                                  name: "minOrderValue",
+                                  value: value,
+                                },
                               });
                             }}
-                            min={new Date().toISOString().split("T")[0]}
-                            autoComplete="on"
                             onBlur={handleBlur}
                             error={
-                              touched.expiresInDays &&
-                              (errors.expiresInDays as string)
+                              touched.minOrderValue &&
+                              (errors.minOrderValue as string)
                             }
                           />
                         </div>
-                      )}
-                    </div>
-
-                    {eventType !== "SIGN_UP" && (
-                      <>
-                        <div className="grid grid-cols-4 gap-3 items-end mt-5">
+                        <div className="col-span-2">
+                          <Select
+                            label="Status"
+                            name="status"
+                            placeholder="Select status"
+                            options={[
+                              { label: "Inactive", value: "INACTIVE" },
+                              { label: "Active", value: "ACTIVE" },
+                            ]}
+                            value={values.status}
+                            onChange={(value) => {
+                              handleChange({
+                                target: { name: "status", value: value },
+                              });
+                            }}
+                            error={touched.status && (errors.status as string)}
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-4 gap-3 items-end mt-5">
+                        <div className="col-span-2">
                           <div className="col-span-2">
                             <TextField
-                              label="Minimum Order Value"
+                              disabled={pointsType === "DEBIT"}
+                              label="Expiry In Days"
                               type="number"
-                              name="minOrderValue"
-                              value={values.minOrderValue}
-                              autoComplete="on"
+                              name="expiresInDays"
+                              value={values.expiresInDays}
                               onChange={(value) => {
-                                console.log("value", value);
                                 handleChange({
                                   target: {
-                                    name: "minOrderValue",
+                                    name: "expiresInDays",
                                     value: value,
                                   },
                                 });
                               }}
+                              min={new Date().toISOString().split("T")[0]}
+                              autoComplete="on"
                               onBlur={handleBlur}
                               error={
-                                touched.minOrderValue &&
-                                (errors.minOrderValue as string)
+                                touched.expiresInDays &&
+                                (errors.expiresInDays as string)
                               }
                             />
                           </div>
-                          {/* <div className="col-span-2">
+                        </div>
+                        {spendingType === "PERCENTAGE" && (
+                          <div className="col-span-2">
                             <TextField
-                              label="Maximum Order Value"
-                              type="number"
+                              label="Spending Limit"
                               autoComplete="on"
-                              name="maxOrderValue"
-                              value={values.maxOrderValue}
-                              onChange={(value) => {
-                                console.log("value", value);
+                              type="number"
+                              name="spendingLimit"
+                              value={values.spendingLimit}
+                              onChange={(value) =>
                                 handleChange({
                                   target: {
-                                    name: "maxOrderValue",
+                                    name: "spendingLimit",
                                     value: value,
                                   },
-                                });
-                              }}
+                                })
+                              }
                               onBlur={handleBlur}
                               error={
-                                touched.maxOrderValue &&
-                                (errors.maxOrderValue as string)
-                              }
-                            />
-                          </div> */}
-                        </div>
-                        <div className="grid grid-cols-4 gap-3 items-end mt-5">
-                          <div className="col-span-2">
-                            <Select
-                              label="Spending Type"
-                              name="spendingType"
-                              placeholder="Select Type"
-                              options={[
-                                { label: "Fixed", value: "FIXED" },
-                                { label: "Percentage", value: "PERCENTAGE" },
-                              ]}
-                              value={values.spendingType}
-                              onChange={(value) => {
-                                setSpendingType(value);
-                                handleChange({
-                                  target: {
-                                    name: "spendingType",
-                                    value: value,
-                                  },
-                                });
-                              }}
-                              error={
-                                touched.spendingType &&
-                                (errors.spendingType as string)
+                                touched.spendingLimit &&
+                                (errors.spendingLimit as string)
                               }
                             />
                           </div>
-                          {spendingType === "PERCENTAGE" && (
-                            <div className="col-span-2">
-                              <TextField
-                                label="Spending Limit"
-                                autoComplete="on"
-                                type="number"
-                                name="spendingLimit"
-                                value={values.spendingLimit}
-                                onChange={(value) =>
-                                  handleChange({
-                                    target: {
-                                      name: "spendingLimit",
-                                      value: value,
-                                    },
-                                  })
-                                }
-                                onBlur={handleBlur}
-                                error={
-                                  touched.spendingLimit &&
-                                  (errors.spendingLimit as string)
-                                }
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </>
-                    )}
-                    <div className="mt-5">
-                      <Select
-                        label="Status"
-                        name="status"
-                        placeholder="Select status"
-                        options={[
-                          { label: "Inactive", value: "INACTIVE" },
-                          { label: "Active", value: "ACTIVE" },
-                        ]}
-                        value={values.status}
-                        onChange={(value) => {
-                          handleChange({
-                            target: { name: "status", value: value },
-                          });
-                        }}
-                        error={touched.status && (errors.status as string)}
-                      />
-                    </div>
+                        )}
+                      </div>
+                    </>
                   </div>
                 </Card>
               </Layout.Section>
@@ -415,4 +392,4 @@ const LoyaltyEventForm = ({
   );
 };
 
-export default LoyaltyEventForm;
+export default LoyaltyEventOrderCreateForm;

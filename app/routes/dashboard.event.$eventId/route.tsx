@@ -1,4 +1,5 @@
-import LotaltyEventForm from "@/components/event/LotaltyEventForm";
+import LoyaltyEventOrderCreateForm from "@/components/event/LoyaltyEventOrderCreateForm";
+import LoyaltyEventSignupForm from "@/components/event/LoyaltyEventSignupForm";
 import { setupAxiosInterceptors } from "@/lib/axios-api-instance";
 import {
   clearSelectedLoyaltyEvent,
@@ -40,5 +41,9 @@ export default function EditEvent() {
     return <div>Loading...</div>;
   }
 
-  return <LotaltyEventForm eventData={LoyaltyEvent} isUpdate />;
+  if (LoyaltyEvent.event === "SIGN_UP") {
+    return <LoyaltyEventSignupForm eventData={LoyaltyEvent} isUpdate />;
+  } else if (LoyaltyEvent.event === "ORDER_CREATE") {
+    return <LoyaltyEventOrderCreateForm eventData={LoyaltyEvent} isUpdate />;
+  }
 }

@@ -280,7 +280,8 @@ export default function CustomerDetails() {
                 </Text>
               </BlockStack>
               <Text as="h2" variant="bodyMd">
-                Total Points Earned : {selectedCustomer.totalEarnedPoints || 0}
+                Total Points Earned :{" "}
+                {selectedCustomer.wallet.totalEarnedPoints || 0}
               </Text>
               <Text as="h2" variant="bodyMd">
                 Total Points Redeemed : 0
