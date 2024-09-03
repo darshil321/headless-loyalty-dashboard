@@ -25,7 +25,7 @@ const validationSchema = Yup.object({
   name: Yup.string().required("Name is required"),
   description: Yup.string().required("Description is required"),
   status: Yup.string().required("Status is required"),
-  conversionValue: Yup.number().required("Conversion value is required"),
+  conversionValue: Yup.number().min(1).required("Conversion value is required"),
   // default: Yup.boolean(),
   rules: Yup.array().of(
     Yup.object({
@@ -217,6 +217,7 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                     <PolarisTextField
                       autoComplete="off"
                       label="Conversion Value"
+                      min={1}
                       name="conversionValue"
                       type="number"
                       placeholder="Enter value"
@@ -226,7 +227,10 @@ const TierForm = ({ tierData, actionData, isUpdate }: any) => {
                           target: { name: "conversionValue", value: value },
                         });
                       }}
-                      error={touched.status && (errors.status as string)}
+                      error={
+                        touched.conversionValue &&
+                        (errors.conversionValue as string)
+                      }
                     />
                   </div>
 

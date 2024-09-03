@@ -102,6 +102,14 @@ const put = (
   return request("put", url, { data, ...config });
 };
 
+const patch = (
+  url: string,
+  data?: any,
+  config?: AxiosRequestConfig,
+): Promise<AxiosResponse> => {
+  return request("patch", url, { data, ...config });
+};
+
 const _delete = (
   url: string,
   config?: AxiosRequestConfig,
@@ -109,5 +117,5 @@ const _delete = (
   return request("delete", url, config);
 };
 
-export { get, post, put, _delete };
+export { get, post, put, _delete, patch };
 export default axiosAPIInstance;

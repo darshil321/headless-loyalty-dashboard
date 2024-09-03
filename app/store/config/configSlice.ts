@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { getConfigAPI } from "@/api/config/get-config";
+import { listConfigsAPI } from "@/api/config/list-configs";
+import { updateConfigAPI } from "@/api/config/update-config";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // import { fetchWithAuth } from "../../utils/fetchAuthApis";
 
@@ -32,12 +35,8 @@ export const updateLoyaltyConfig: any = createAsyncThunk(
   "loyaltyConfig/update",
   async (loyaltyData: any, thunkAPI) => {
     try {
-      // const response = await fetchWithAuth(
-      //   `/loyalty_config/${loyaltyData.id}`,
-      //   "PUT",
-      //   loyaltyData,
-      // );
-      // return response.data;
+      const response = await updateConfigAPI(loyaltyData.id, loyaltyData);
+      return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data);
     }
@@ -59,13 +58,10 @@ export const deleteLoyaltyConfig: any = createAsyncThunk(
 // Define async thunk for fetching a single loyalty configuration by ID
 export const getLoyaltyConfigById: any = createAsyncThunk(
   "loyaltyConfig/getById",
-  async (loyaltyId, thunkAPI) => {
+  async (loyaltyId: string, thunkAPI) => {
     try {
-      // const response = await fetchWithAuth(
-      //   `/loyalty_config/${loyaltyId}`,
-      //   "GET",
-      // );
-      // return response.data;
+      const response = await getConfigAPI(loyaltyId);
+      return response;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data);
     }
@@ -77,8 +73,8 @@ export const getAllLoyaltyConfigs: any = createAsyncThunk(
   "loyaltyConfig/getAll",
   async (_, thunkAPI) => {
     try {
-      // const response = await fetchWithAuth("/loyalty_config", "GET");
-      // return response.data;
+      const response = await listConfigsAPI();
+      return response;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data);
     }
@@ -89,7 +85,11 @@ export const getAllLoyaltyConfigs: any = createAsyncThunk(
 const loyaltySlice = createSlice({
   name: "loyaltyConfig",
   initialState,
-  reducers: {},
+  reducers: {
+    clearLoyaltyConfig: (state) => {
+      state.selectedLoyaltyConfig = null;
+    },
+  },
   extraReducers: (builder) => {
     // Handle createLoyaltyConfig pending and fulfilled actions
     builder.addCase(createLoyaltyConfig.pending, (state) => {
@@ -137,15 +137,7 @@ const loyaltySlice = createSlice({
     });
     builder.addCase(getLoyaltyConfigById.fulfilled, (state, action) => {
       state.loading = false;
-      // Assuming payload is the fetched loyalty config object
-      const { conversion, id } = action.payload;
-      const { currency, value } = conversion;
-      const loyaltyConfig: any = {
-        currency,
-        value,
-        id,
-      };
-      state.selectedLoyaltyConfig = loyaltyConfig;
+      state.selectedLoyaltyConfig = action.payload;
     });
     builder.addCase(getLoyaltyConfigById.rejected, (state, action) => {
       state.loading = false;
@@ -158,7 +150,6 @@ const loyaltySlice = createSlice({
     });
     builder.addCase(getAllLoyaltyConfigs.fulfilled, (state, action) => {
       state.loading = false;
-      // Assuming payload is an array of loyalty config objects
       state.loyaltyConfigs = action.payload;
     });
     builder.addCase(getAllLoyaltyConfigs.rejected, (state, action) => {
@@ -169,5 +160,5 @@ const loyaltySlice = createSlice({
 });
 
 // Export actions and reducer
-// export const {} = loyaltySlice.actions;
+export const { clearLoyaltyConfig } = loyaltySlice.actions;
 export default loyaltySlice.reducer;

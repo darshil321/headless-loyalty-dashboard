@@ -1,7 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getCustomerAPI } from "@/api/users/get-customer";
 import { listCustomersAPI } from "@/api/users/list-customers";
-import { updateCustomerAPI } from "@/api/users/update-customer";
+import {
+  patchCustomerAPI,
+  updateCustomerAPI,
+} from "@/api/users/update-customer";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // Define initial state for the slice
@@ -74,6 +77,20 @@ export const getAllLoyaltyUsers: any = createAsyncThunk(
     try {
       const response = await listCustomersAPI();
       return response;
+    } catch (error: any) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  },
+);
+
+export const editTierOfLoyaltyUser: any = createAsyncThunk(
+  "loyaltyUser/editTier",
+  async (tierData: any, thunkAPI) => {
+    try {
+      console.log("tierData", tierData);
+      const { id, ...restData } = tierData;
+      const response = await patchCustomerAPI(id, restData);
+      return response.data;
     } catch (error: any) {
       return thunkAPI.rejectWithValue(error.response.data);
     }

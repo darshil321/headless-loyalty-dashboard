@@ -6,6 +6,9 @@ import {
   Badge,
   InlineGrid,
   BlockStack,
+  Button,
+  Modal,
+  RadioButton,
 } from "@shopify/polaris";
 import { useNavigate, useParams, useSearchParams } from "@remix-run/react";
 
@@ -14,6 +17,7 @@ import { useDispatch } from "react-redux";
 import { useAppSelector } from "@/store/hooks";
 import {
   clearLoyaltyCustomer,
+  editTierOfLoyaltyUser,
   getLoyaltyUserById,
 } from "@/store/user/userSlice";
 import { getLoyaltyTransactionByUserId } from "@/store/transaction/transactionSlice";
@@ -32,6 +36,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { getAllLoyaltyTiers } from "@/store/tier/tierSlice";
 
 const statusMap: any = {
   NO_SPENT: "Not Used",
@@ -54,16 +59,45 @@ export default function CustomerDetails() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
+  const [active, setActive] = useState(false);
+
+  const handleClose = () => {
+    setActive(false);
+  };
+
   const userId = searchParams.get("userId");
 
-  const selectedCustomer = useAppSelector(
+  const selectedCustomer: any = useAppSelector(
     (state: any) => state.user.selectedLoyaltyUser,
   );
   const userTransactions = useAppSelector(
     (state: any) => state.transaction.selectedLoyaltyTransaction,
   );
 
+  const tiers = useAppSelector((state) => state.tier.loyaltyTiers);
+
   const [showDialog, setShowDialog] = useState(false);
+  const [selectedTierId, setSelectedTierId] = useState(
+    selectedCustomer?.tier?.id,
+  );
+
+  useEffect(() => {
+    setSelectedTierId(selectedCustomer?.tier?.id);
+  }, [selectedCustomer?.tier?.id]);
+
+  const handleConfirmSave = async () => {
+    try {
+      const tierData = {
+        id: selectedCustomer.wallet.id,
+        tierId: selectedTierId,
+      };
+      await dispatch(editTierOfLoyaltyUser(tierData));
+      navigate("/customers");
+    } catch (error) {
+      console.error("Failed to delete event:", error);
+    }
+    handleClose();
+  };
 
   const handleCreateEvent = () => {
     // Implement logic to create a new event
@@ -79,8 +113,8 @@ export default function CustomerDetails() {
       setupAxiosInterceptors(host);
 
       dispatch(clearLoyaltyCustomer());
+      dispatch(getAllLoyaltyTiers());
       dispatch(getLoyaltyUserById(id)).catch((error: any) => {
-        console.error("Error fetching user data:", error);
         navigate("/error");
       });
       dispatch(getLoyaltyTransactionByUserId(userId));
@@ -90,6 +124,11 @@ export default function CustomerDetails() {
       dispatch(clearLoyaltyCustomer());
     };
   }, [id, dispatch, navigate]);
+
+  const handleUpgradeTier = () => {
+    // navigate("/tiers");
+    setActive(true);
+  };
 
   if (!selectedCustomer) {
     return <h1>Loading...</h1>;
@@ -146,7 +185,7 @@ export default function CustomerDetails() {
                         {/* Ensure unique value */}
                         <AccordionTrigger className="cursor-pointer no-underline ">
                           <div className="w-full flex justify-between p-2">
-                            <p>{transaction?.id.substring(0, 18)}</p>
+                            <p>{transaction?.id}</p>
                             <div className="flex justify-between">
                               <div className="mr-2">
                                 <Text as="h4" variant="headingMd">
@@ -163,13 +202,13 @@ export default function CustomerDetails() {
                                   </span>
                                 </Text>
                               </div>
-                              <Text as="p" variant="bodyMd">
+                              {/* <Text as="p" variant="bodyMd">
                                 <Badge
                                   tone={statusColorMap[transaction?.status]}
                                 >
                                   {statusMap[transaction?.status]}
                                 </Badge>
-                              </Text>
+                              </Text> */}
                             </div>
                           </div>
                         </AccordionTrigger>
@@ -240,27 +279,60 @@ export default function CustomerDetails() {
                   {selectedCustomer.wallet.totalPoints} Points
                 </Text>
               </BlockStack>
-              {/* <Text as="h2" variant="bodyMd">
-                Total Points Earned : {selectedCustomer.totalPoints}
+              <Text as="h2" variant="bodyMd">
+                Total Points Earned : {selectedCustomer.totalEarnedPoints || 0}
               </Text>
               <Text as="h2" variant="bodyMd">
-                Total Points Redeemed : {selectedCustomer.totalPoints}
-              </Text> */}
+                Total Points Redeemed : 0
+              </Text>
 
-              {/* <InlineGrid columns="1fr 1fr" gap="200">
-                <Button
+              <InlineGrid columns="1fr" gap="200">
+                {/* <Button
                   variant="primary"
                   onClick={() => console.log("Redeem Points")}
                 >
                   Redeem Points
-                </Button>
+                </Button> */}
 
-                <Button onClick={handleAdjustPoints}>Adjust Points</Button>
-              </InlineGrid> */}
+                <Button variant="primary" onClick={handleUpgradeTier}>
+                  Upgrade Tier
+                </Button>
+              </InlineGrid>
             </BlockStack>
           </Card>
         </Layout.Section>
       </Layout>
+      <Modal
+        open={active}
+        onClose={handleClose}
+        title="Select Tier"
+        primaryAction={{
+          content: "Save",
+          onAction: handleConfirmSave,
+        }}
+        secondaryActions={[
+          {
+            content: "Cancel",
+            onAction: handleClose,
+          },
+        ]}
+      >
+        <Modal.Section>
+          {tiers.map((tier: any, index) => {
+            return (
+              <div key={index}>
+                <RadioButton
+                  id={tier.id}
+                  label={tier.name}
+                  checked={selectedTierId === tier.id}
+                  onChange={() => setSelectedTierId(tier.id)}
+                />
+                <br />
+              </div>
+            );
+          })}
+        </Modal.Section>
+      </Modal>
       {showDialog && (
         <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
           <AlertDialogContent>
