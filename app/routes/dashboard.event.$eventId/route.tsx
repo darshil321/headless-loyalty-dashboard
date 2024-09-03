@@ -37,7 +37,7 @@ export default function EditEvent() {
   }, [eventId, dispatch]);
 
   if (!LoyaltyEvent) {
-    return <div>Loadifffng...</div>;
+    return <div>Loading...</div>;
   }
 
   return <LotaltyEventForm eventData={LoyaltyEvent} isUpdate />;

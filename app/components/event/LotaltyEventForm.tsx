@@ -62,11 +62,6 @@ const LoyaltyEventForm = ({
           0,
           "Minimum order value must be non-negative",
         ),
-        // .required("Minimum order value is required")
-
-        // maxOrderValue: Yup.number()
-        //   .required("Maximum order value is required")
-        //   .min(0, "Maximum order value must be non-negative"),
 
         spendingType: Yup.string().required("Spending type is required"),
       };

@@ -5,7 +5,7 @@ import {
   EditIcon,
   CartDiscountIcon,
   SettingsIcon,
-  ArrowUpIcon,
+  ArrowDownIcon,
 } from "@shopify/polaris-icons";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { useEffect, useState } from "react";
@@ -21,7 +21,7 @@ const configKeyMap: any = {
 const configIconMap: any = {
   COUPON: CartDiscountIcon,
   EVENT_MATCH: SettingsIcon,
-  TIER_UPDATE: ArrowUpIcon,
+  TIER_UPDATE: ArrowDownIcon,
 };
 
 export default function CustomerDetails() {
