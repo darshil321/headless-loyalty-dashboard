@@ -185,12 +185,13 @@ export default function CustomerDetails() {
                         {/* Ensure unique value */}
                         <AccordionTrigger className="cursor-pointer no-underline ">
                           <div className="w-full flex justify-between p-2">
-                            <p>{transaction?.id}</p>
+                            <p>{transaction?.description}</p>
                             <div className="flex justify-between">
                               <div className="mr-2">
                                 <Text as="h4" variant="headingMd">
                                   <span className="ml-2">
                                     <Badge
+                                      size="large"
                                       tone={
                                         transaction?.type === "DEBIT"
                                           ? "critical"
@@ -229,14 +230,7 @@ export default function CustomerDetails() {
                                 </Text>
                               </InlineGrid>
 
-                              <InlineGrid columns="1fr auto">
-                                <Text as="p" variant="bodyMd">
-                                  <b>Description</b>
-                                </Text>
-                                <Text as="p" variant="bodyMd">
-                                  {transaction?.description}
-                                </Text>
-                              </InlineGrid>
+                              <InlineGrid columns="1fr auto"></InlineGrid>
                               <InlineGrid columns="1fr auto">
                                 <Text as="p" variant="bodyMd">
                                   <b>Status</b>
@@ -284,7 +278,8 @@ export default function CustomerDetails() {
                 {selectedCustomer.wallet.totalEarnedPoints || 0}
               </Text>
               <Text as="h2" variant="bodyMd">
-                Total Points Redeemed : 0
+                Total Points Redeemed :{" "}
+                {selectedCustomer.wallet.totalRedeemedPoints || 0}
               </Text>
 
               <InlineGrid columns="1fr" gap="200">

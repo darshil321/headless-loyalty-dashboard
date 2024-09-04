@@ -3,7 +3,7 @@
 client_id = "540d2178130770d2fa72da8461f0de90"
 name = "loyalty-dashboard"
 handle = "loyalty-dashboard"
-application_url = "https://actions-thank-ft-lanes.trycloudflare.com"
+application_url = "https://petition-pavilion-terror-linux.trycloudflare.com"
 embedded = true
 
 [build]
@@ -17,9 +17,9 @@ scopes = "read_customers,read_discounts,read_orders,read_price_rules,read_produc
 
 [auth]
 redirect_urls = [
-  "https://actions-thank-ft-lanes.trycloudflare.com/auth/callback",
-  "https://actions-thank-ft-lanes.trycloudflare.com/auth/shopify/callback",
-  "https://actions-thank-ft-lanes.trycloudflare.com/api/auth/callback"
+  "https://petition-pavilion-terror-linux.trycloudflare.com/auth/callback",
+  "https://petition-pavilion-terror-linux.trycloudflare.com/auth/shopify/callback",
+  "https://petition-pavilion-terror-linux.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
