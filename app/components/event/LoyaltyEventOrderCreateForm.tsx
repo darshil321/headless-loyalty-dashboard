@@ -53,6 +53,10 @@ const LoyaltyEventOrderCreateForm = ({
       type: Yup.string().required("Event type is required"),
       tierId: Yup.string().required("Tier is required"),
       status: Yup.string().required("Status is required"),
+      usageLimit: Yup.number()
+        .min(0, "Usage limit must be non-negative")
+        .integer("Usage limit must be an integer")
+        .notRequired(),
     };
 
     schema = {
@@ -165,6 +169,7 @@ const LoyaltyEventOrderCreateForm = ({
         minOrderValue: eventData?.minOrderValue || null,
         maxOrderValue: eventData?.maxOrderValue || null,
         spendingLimit: eventData?.spendingLimit || null,
+        usageLimit: eventData?.usageLimit || null,
         spendingType: eventData?.spendingType || "",
         tierId: eventData?.tierId || "",
         type: eventData?.type || "",
@@ -330,31 +335,53 @@ const LoyaltyEventOrderCreateForm = ({
                       </div>
                       <div className="grid grid-cols-4 gap-3 items-end mt-5">
                         <div className="col-span-2">
-                          <div className="col-span-2">
-                            <TextField
-                              disabled={pointsType === "DEBIT"}
-                              label="Expiry In Days"
-                              type="number"
-                              name="expiresInDays"
-                              value={values.expiresInDays}
-                              onChange={(value) => {
-                                handleChange({
-                                  target: {
-                                    name: "expiresInDays",
-                                    value: value,
-                                  },
-                                });
-                              }}
-                              min={new Date().toISOString().split("T")[0]}
-                              autoComplete="on"
-                              onBlur={handleBlur}
-                              error={
-                                touched.expiresInDays &&
-                                (errors.expiresInDays as string)
-                              }
-                            />
-                          </div>
+                          <TextField
+                            disabled={pointsType === "DEBIT"}
+                            label="Expiry In Days"
+                            type="number"
+                            name="expiresInDays"
+                            value={values.expiresInDays}
+                            onChange={(value) => {
+                              handleChange({
+                                target: {
+                                  name: "expiresInDays",
+                                  value: value,
+                                },
+                              });
+                            }}
+                            min={new Date().toISOString().split("T")[0]}
+                            autoComplete="on"
+                            onBlur={handleBlur}
+                            error={
+                              touched.expiresInDays &&
+                              (errors.expiresInDays as string)
+                            }
+                          />
                         </div>
+                        <div className="col-span-2">
+                          <TextField
+                            label="Usage Limit"
+                            autoComplete="on"
+                            type="number"
+                            name="usageLimit"
+                            value={values.usageLimit}
+                            onChange={(value) =>
+                              handleChange({
+                                target: {
+                                  name: "usageLimit",
+                                  value: value,
+                                },
+                              })
+                            }
+                            onBlur={handleBlur}
+                            error={
+                              touched.usageLimit &&
+                              (errors.usageLimit as string)
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-4 gap-3 items-end mt-5">
                         {spendingType === "PERCENTAGE" && (
                           <div className="col-span-2">
                             <TextField
